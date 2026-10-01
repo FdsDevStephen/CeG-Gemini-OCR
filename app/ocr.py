@@ -53,9 +53,38 @@ Output only the extracted text.
 """
 
 
+GEMINI_MODEL = "gemini-3.6-flash"
+
+# USD per 1M tokens. Thinking tokens are billed at the output rate.
+INPUT_PRICE_PER_M = float(os.getenv("GEMINI_INPUT_PRICE_PER_M", "1.50"))
+OUTPUT_PRICE_PER_M = float(os.getenv("GEMINI_OUTPUT_PRICE_PER_M", "7.50"))
+
+# One entry per Gemini call; callers may clear it to measure a batch of calls.
+usage_log = []
+
+
+def record_usage(response) -> None:
+    usage = getattr(response, "usage_metadata", None)
+    input_tokens = getattr(usage, "prompt_token_count", None) or 0
+    output_tokens = getattr(usage, "candidates_token_count", None) or 0
+    thinking_tokens = getattr(usage, "thoughts_token_count", None) or 0
+
+    cost = (
+        input_tokens * INPUT_PRICE_PER_M
+        + (output_tokens + thinking_tokens) * OUTPUT_PRICE_PER_M
+    ) / 1_000_000
+
+    usage_log.append({
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "thinking_tokens": thinking_tokens,
+        "cost_usd": cost,
+    })
+
+
 def run_ocr(pdf_file, prompt, temperature=1.0):
-    return client.models.generate_content(
-        model="gemini-3.5-flash",
+    response = client.models.generate_content(
+        model=GEMINI_MODEL,
         contents=[
             pdf_file,
             prompt,
@@ -64,6 +93,8 @@ def run_ocr(pdf_file, prompt, temperature=1.0):
             "temperature": temperature,
         },
     )
+    record_usage(response)
+    return response
 
 
 def is_recitation_error(result_or_error) -> bool:
@@ -87,7 +118,7 @@ def run_tesseract_ocr(pdf_document, page_number: int) -> str:
         alpha=False,
     )
     image = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
-    language = os.getenv("TESSERACT_LANG", "eng")
+    language = os.getenv("TESSERACT_LANG", "eng+kan")
     return pytesseract.image_to_string(image, lang=language)
 
 

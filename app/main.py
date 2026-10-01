@@ -2,7 +2,6 @@ import shutil
 import tempfile
 from pathlib import Path
 import re
-from uuid import uuid4
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 
@@ -53,7 +52,7 @@ def perform_ocr(file: UploadFile = File(...)):
             safe_stem = re.sub(r'[<>:"/\\|?*]+', "_", uploaded_name).strip(" .")
             safe_stem = safe_stem or "document"
             OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-            text_path = OUTPUT_DIR / f"{safe_stem}_{uuid4().hex[:8]}.txt"
+            text_path = OUTPUT_DIR / f"{safe_stem}.txt"
             text_path.write_text(text, encoding="utf-8")
 
             return {

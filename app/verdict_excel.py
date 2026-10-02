@@ -23,27 +23,14 @@ SUMMARY_SHEET = "Summary"
 # (header, verdict key, column width)
 COLUMNS = [
     ("Case ID", "case_id", 12),
-    ("Verdict", "verdict", 22),
     ("Resolved?", "is_resolved", 11),
-    ("Complaint Summary", "complaint_summary", 50),
-    ("Final Action", "final_action", 50),
+    ("ATR Key Sentence", "atr_key_sentence", 50),
+    ("ATR Key Sentence (English)", "atr_key_sentence_english", 50),
     ("Reason", "reason", 60),
     ("Formal Remark", "formal_remark", 45),
-    ("Verdict Meaning", "verdict_meaning", 45),
-    ("Model", "model", 20),
-    ("Prompt Tokens", "prompt_tokens", 14),
-    ("Output Tokens", "output_tokens", 14),
 ]
 
-VERDICT_COLOURS = {
-    "RESOLVED": "C6EFCE",
-    "PARTIALLY_RESOLVED": "FFEB9C",
-    "REDIRECTED": "DDEBF7",
-    "REJECTED": "F8CBAD",
-    "CLOSED_WITHOUT_ACTION": "D9D2E9",
-    "WRONG_ACTION": "FFC7CE",
-    "UNCLEAR": "E7E6E6",
-}
+RESOLVED_COLOURS = {"Yes": "C6EFCE", "No": "FFC7CE"}
 
 _thin = Side(style="thin", color="BFBFBF")
 BORDER = Border(left=_thin, right=_thin, top=_thin, bottom=_thin)
@@ -81,21 +68,21 @@ def _write_row(ws, row, verdict):
         cell = ws.cell(row, col, _cell_value(key, verdict))
         cell.border = BORDER
         cell.alignment = Alignment(vertical="top", wrap_text=True)
-    verdict_cell = ws.cell(row, 2)
-    verdict_cell.fill = PatternFill("solid", fgColor=VERDICT_COLOURS.get(verdict.get("verdict"), "FFFFFF"))
-    verdict_cell.font = Font(bold=True)
+    resolved_cell = ws.cell(row, 2)
+    resolved_cell.fill = PatternFill("solid", fgColor=RESOLVED_COLOURS[resolved_cell.value])
+    resolved_cell.font = Font(bold=True)
 
 
 def _rebuild_summary(wb):
     if SUMMARY_SHEET in wb.sheetnames:
         del wb[SUMMARY_SHEET]
     s = wb.create_sheet(SUMMARY_SHEET)
-    for col, header in enumerate(("Verdict", "Count", "Share"), start=1):
+    for col, header in enumerate(("Resolved?", "Count", "Share"), start=1):
         _style_header(s.cell(1, col, header))
 
-    total_row = len(VERDICT_COLOURS) + 2
-    for row, (verdict, colour) in enumerate(VERDICT_COLOURS.items(), start=2):
-        s.cell(row, 1, verdict).fill = PatternFill("solid", fgColor=colour)
+    total_row = len(RESOLVED_COLOURS) + 2
+    for row, (answer, colour) in enumerate(RESOLVED_COLOURS.items(), start=2):
+        s.cell(row, 1, answer).fill = PatternFill("solid", fgColor=colour)
         s.cell(row, 2, f"=COUNTIF({SHEET}!$B:$B,A{row})")
         s.cell(row, 3, f"=IF($B${total_row}=0,0,B{row}/$B${total_row})").number_format = "0%"
     s.cell(total_row, 1, "Total").font = Font(bold=True)

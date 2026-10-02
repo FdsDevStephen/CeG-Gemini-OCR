@@ -8,3 +8,4 @@ pymupdf
 pillow
 pytesseract
 openpyxl
+streamlit>=1.43

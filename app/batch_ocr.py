@@ -67,6 +67,17 @@ def ocr_file(file_path: Path) -> str:
         return extract_text_from_pdf(pdf_path)
 
 
+def ocr_files(files) -> str:
+    """OCR several files into one text, each headed by its file name when there are several."""
+    texts = []
+    for file_path in files:
+        text = ocr_file(file_path)
+        if len(files) > 1:
+            text = f"===== {file_path.name} =====\n\n{text}"
+        texts.append(text)
+    return "\n\n".join(texts)
+
+
 def summarize_usage(calls):
     return {
         "api_calls": len(calls),
@@ -170,15 +181,8 @@ def main():
         ocr.usage_log.clear()
 
         try:
-            texts = []
-            for file_path in files:
-                text = ocr_file(file_path)
-                if len(files) > 1:
-                    text = f"===== {file_path.name} =====\n\n{text}"
-                texts.append(text)
-
             text_path.parent.mkdir(parents=True, exist_ok=True)
-            text_path.write_text("\n\n".join(texts), encoding="utf-8")
+            text_path.write_text(ocr_files(files), encoding="utf-8")
             status, error = "done", None
             print(f"    done in {time.time() - started:.1f}s")
         except Exception as exc:

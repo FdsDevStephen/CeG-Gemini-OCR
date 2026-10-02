@@ -5,10 +5,9 @@ The folder must look like the ones in PGRS:
     <grievance_id>/Citizen/<pdf or image files>
 
 Writes the same files as the command-line tools:
-    PGRS/<grievance_id>/ATR|Citizen/...        (the uploaded files)
-    PGRS_Output/<grievance_id>/ATR.txt, Citizen.txt
-    Folder and Txt/PGRS/<grievance_id>/ATR|Citizen/...  and  .../Extracted Text/ATR.txt, Citizen.txt
-    Observation/<grievance_id>Verdict.json (+ Verdicts.xlsx), also copied to Folder and Txt/Observation
+    PGRS/<grievance_id>/ and Folder and Txt/PGRS/<grievance_id>/   (the uploaded files)
+    PGRS_Output/<grievance_id>/ and .../Extracted Text/           (ATR.txt, Citizen.txt)
+    Observation/<Model>/ and Folder and Txt/Observation/<Model>/    (<id>Observation.json, Observations_<Model>.xlsx)
 
 Run:
     streamlit run streamlit_app.py
@@ -16,24 +15,19 @@ Run:
 
 import json
 import time
-import urllib.error
 from pathlib import Path, PurePosixPath
 
 import streamlit as st
 
-from app.batch_ocr import DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR, IMAGE_EXTENSIONS, PDF_EXTENSIONS, SUBFOLDERS
-from app.compare_atr import DEFAULT_VERDICT_DIR, OLLAMA_MODEL, OLLAMA_URL, PROJECT_ROOT, check_case, save_verdict
+from app import ocr
+from app.observation import MODELS, check_case, observation_dirs, save_observation
 
 
-# Copy of each grievance folder, with its extracted text alongside the documents.
-SHARE_DIR = PROJECT_ROOT / "Folder and Txt" / "PGRS"
-SHARE_OBSERVATION_DIR = PROJECT_ROOT / "Folder and Txt" / "Observation"
-EXTRACTED_TEXT_FOLDER = "Extracted Text"
-BACKENDS = {
-    "Gemini (accurate, paid)": "gemini",
-    f"Qwen {OLLAMA_MODEL} (local, free, slower)": "ollama",
-}
-SUPPORTED = PDF_EXTENSIONS | IMAGE_EXTENSIONS
+SUPPORTED = ocr.PDF_EXTENSIONS | ocr.IMAGE_EXTENSIONS
+
+
+def file_name(upload) -> str:
+    return PurePosixPath(upload.name.replace("\\", "/")).name
 
 
 def split_upload(uploads) -> tuple[str | None, dict, list[str]]:
@@ -41,19 +35,19 @@ def split_upload(uploads) -> tuple[str | None, dict, list[str]]:
 
     Returns (grievance id, {"ATR": [...], "Citizen": [...]}, problems).
     """
-    groups = {subfolder: [] for subfolder in SUBFOLDERS}
+    groups = {subfolder: [] for subfolder in ocr.SUBFOLDERS}
     case_ids, ignored = set(), []
     for upload in uploads:
         parts = PurePosixPath(upload.name.replace("\\", "/")).parts
         # The subfolder is matched by name, so <id>/ATR/x.pdf and <id>/atr/scans/x.pdf both work.
         index = next(
-            (i for i, part in enumerate(parts[:-1]) if part.casefold() in {s.casefold() for s in SUBFOLDERS}),
+            (i for i, part in enumerate(parts[:-1]) if part.casefold() in {s.casefold() for s in ocr.SUBFOLDERS}),
             None,
         )
         if index is None or Path(parts[-1]).suffix.lower() not in SUPPORTED:
             ignored.append(upload.name)
             continue
-        subfolder = next(s for s in SUBFOLDERS if s.casefold() == parts[index].casefold())
+        subfolder = next(s for s in ocr.SUBFOLDERS if s.casefold() == parts[index].casefold())
         groups[subfolder].append(upload)
         if index > 0:
             case_ids.add(parts[index - 1])
@@ -68,24 +62,20 @@ def split_upload(uploads) -> tuple[str | None, dict, list[str]]:
 
 def save_uploads(case_id: str, subfolder: str, uploads) -> list[Path]:
     """Save to PGRS (what the OCR reads) and to Folder and Txt/PGRS; returns the PGRS paths."""
-    names = [PurePosixPath(upload.name.replace("\\", "/")).name for upload in uploads]
-    for root in (SHARE_DIR, DEFAULT_INPUT_DIR):
+    for root in (ocr.SHARE_DIR, ocr.INPUT_DIR):
         folder = root / case_id / subfolder
         folder.mkdir(parents=True, exist_ok=True)
-        for name, upload in zip(names, uploads):
-            (folder / name).write_bytes(upload.getvalue())
-    return sorted(DEFAULT_INPUT_DIR / case_id / subfolder / name for name in names)
+        for upload in uploads:
+            (folder / file_name(upload)).write_bytes(upload.getvalue())
+    return sorted(ocr.INPUT_DIR / case_id / subfolder / file_name(upload) for upload in uploads)
 
 
-def run_case(case_id: str, groups: dict, backend: str, force_ocr: bool) -> dict:
-    from app import ocr  # needs GEMINI_API_KEY; imported here so the page still loads without it
-    from app.batch_ocr import ocr_files
-
+def run_case(case_id: str, groups: dict, model: str, force_ocr: bool) -> dict:
     texts, ocr_cost = {}, 0.0
     with st.status("Working...", expanded=True) as status:
-        for subfolder in SUBFOLDERS:
+        for subfolder in ocr.SUBFOLDERS:
             files = save_uploads(case_id, subfolder, groups[subfolder])
-            text_path = DEFAULT_OUTPUT_DIR / case_id / f"{subfolder}.txt"
+            text_path = ocr.TEXT_DIR / case_id / f"{subfolder}.txt"
             if text_path.exists() and not force_ocr:
                 st.write(f"{subfolder}: using the text already extracted earlier.")
                 texts[subfolder] = text_path.read_text(encoding="utf-8")
@@ -93,25 +83,19 @@ def run_case(case_id: str, groups: dict, backend: str, force_ocr: bool) -> dict:
                 st.write(f"{subfolder}: running OCR on {len(files)} file(s)...")
                 started = time.time()
                 ocr.usage_log.clear()
-                texts[subfolder] = ocr_files(files)
+                texts[subfolder] = ocr.ocr_files(files)
                 ocr_cost += sum(call["cost_usd"] for call in ocr.usage_log)
-                text_path.parent.mkdir(parents=True, exist_ok=True)
-                text_path.write_text(texts[subfolder], encoding="utf-8")
                 st.write(f"{subfolder}: done in {time.time() - started:.0f}s.")
+            ocr.save_text(case_id, subfolder, texts[subfolder])
 
-            extracted = SHARE_DIR / case_id / EXTRACTED_TEXT_FOLDER
-            extracted.mkdir(parents=True, exist_ok=True)
-            (extracted / f"{subfolder}.txt").write_text(texts[subfolder], encoding="utf-8")
-
-        st.write("Comparing the ATR with the citizen's grievance...")
+        st.write(f"Checking the ATR against the citizen's request with {MODELS[model]}...")
         started = time.time()
-        result = check_case(case_id, texts["Citizen"], texts["ATR"], backend)
-        saved, excel_note = save_verdict(result, DEFAULT_VERDICT_DIR)
-        save_verdict(result, SHARE_OBSERVATION_DIR)
-        st.write(f"Observation ready in {time.time() - started:.0f}s ({excel_note}).")
+        observation = check_case(case_id, texts["Citizen"], texts["ATR"], model)
+        note = save_observation(observation, model)
+        st.write(f"Observation ready in {time.time() - started:.0f}s ({note}).")
         status.update(label="Done", state="complete", expanded=False)
 
-    return {"case_id": case_id, "texts": texts, "observation": saved, "ocr_cost": ocr_cost}
+    return {"case_id": case_id, "model": model, "texts": texts, "observation": observation, "ocr_cost": ocr_cost}
 
 
 def show_result(run: dict):
@@ -122,9 +106,9 @@ def show_result(run: dict):
     else:
         st.error("Not resolved")
 
-    st.markdown(f"**Formal remark:** {observation['formal_remark']}")
-    st.markdown(f"**Reason:** {observation['reason']}")
-    st.markdown("**ATR key sentence**")
+    st.markdown(f"**Case summary:** {observation['case_summary']}")
+    st.markdown(f"**Final action taken:** {observation['final_action_taken']}")
+    st.markdown("**ATR key sentence (Kannada)**")
     st.write(observation["atr_key_sentence"])
     st.markdown("**ATR key sentence (English)**")
     st.write(observation["atr_key_sentence_english"])
@@ -132,18 +116,15 @@ def show_result(run: dict):
     st.download_button(
         "Download observation (JSON)",
         json.dumps(observation, ensure_ascii=False, indent=2),
-        file_name=f"{run['case_id']}Verdict.json",
+        file_name=f"{run['case_id']}Observation.json",
         mime="application/json",
     )
     if run["ocr_cost"]:
         st.caption(f"OCR cost for this upload: ${run['ocr_cost']:.4f}")
-    st.caption(
-        f"Saved to {SHARE_DIR / run['case_id'] / EXTRACTED_TEXT_FOLDER}, "
-        f"{DEFAULT_OUTPUT_DIR / run['case_id']}, {DEFAULT_VERDICT_DIR} and {SHARE_OBSERVATION_DIR}"
-    )
+    st.caption("Saved to " + ", ".join(str(folder) for folder in observation_dirs(run["model"])))
 
     st.subheader("Extracted text")
-    for column, subfolder in zip(st.columns(len(SUBFOLDERS)), SUBFOLDERS):
+    for column, subfolder in zip(st.columns(len(ocr.SUBFOLDERS)), ocr.SUBFOLDERS):
         with column:
             st.markdown(f"**{subfolder}.txt**")
             st.text_area(subfolder, run["texts"][subfolder], height=400, label_visibility="collapsed")
@@ -165,9 +146,9 @@ def main():
     )
 
     with st.sidebar:
-        backend_label = st.radio("Model for the observation", list(BACKENDS))
+        model = st.radio("Model for the observation", list(MODELS), format_func=MODELS.get)
         force_ocr = st.checkbox("Re-run OCR even if this grievance was extracted before")
-        st.caption("OCR always uses Gemini. Qwen needs `ollama serve` running.")
+        st.caption("OCR always uses Gemini. Gemma needs Ollama running.")
 
     uploads = st.file_uploader(
         "Grievance folder",
@@ -177,18 +158,15 @@ def main():
     if uploads:
         case_id, groups, problems = split_upload(uploads)
         case_id = st.text_input("Grievance ID", value=case_id or "").strip()
-        for subfolder in SUBFOLDERS:
-            names = ", ".join(PurePosixPath(u.name.replace("\\", "/")).name for u in groups[subfolder]) or "none"
-            st.write(f"**{subfolder}:** {names}")
+        for subfolder in ocr.SUBFOLDERS:
+            st.write(f"**{subfolder}:** {', '.join(file_name(u) for u in groups[subfolder]) or 'none'}")
         for problem in problems:
             st.warning(problem)
 
-        ready = case_id and all(groups[s] for s in SUBFOLDERS)
+        ready = case_id and all(groups[s] for s in ocr.SUBFOLDERS)
         if st.button("Extract text and find observation", type="primary", disabled=not ready):
             try:
-                st.session_state["run"] = run_case(case_id, groups, BACKENDS[backend_label], force_ocr)
-            except urllib.error.URLError as exc:
-                st.error(f"Could not reach Ollama at {OLLAMA_URL}: {exc}. Is `ollama serve` running?")
+                st.session_state["run"] = run_case(case_id, groups, model, force_ocr)
             except Exception as exc:
                 st.exception(exc)
 

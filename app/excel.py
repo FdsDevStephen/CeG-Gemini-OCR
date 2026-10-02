@@ -1,11 +1,11 @@
-"""Keep Verdict/Verdicts.xlsx in sync with the <grievance_id>Verdict.json files.
+"""Keep Observations_<Model>.xlsx in sync with the <grievance_id>Observation.json files in the same folder.
 
 New grievances are appended as rows; a grievance that is already in the sheet
 (e.g. re-checked with --force) has its row updated in place. Rows already in
 the sheet are never removed, so the workbook keeps growing across runs.
 
-Used by app.compare_atr: each verdict is written to the sheet as soon as it
-is produced, and the whole Verdict folder is re-synced at the end of the run.
+Used by app.observation: each observation is written to the sheet as soon as it
+is produced, and the whole observation folder is re-synced at the end of the run.
 """
 
 import json
@@ -16,18 +16,17 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 
-WORKBOOK_NAME = "Verdicts.xlsx"
-SHEET = "Verdicts"
+SHEET = "Observations"
 SUMMARY_SHEET = "Summary"
 
-# (header, verdict key, column width)
+# (header, observation key, column width)
 COLUMNS = [
     ("Case ID", "case_id", 12),
     ("Resolved?", "is_resolved", 11),
-    ("ATR Key Sentence", "atr_key_sentence", 50),
+    ("Case Summary", "case_summary", 50),
+    ("Final Action Taken", "final_action_taken", 50),
+    ("ATR Key Sentence (Kannada)", "atr_key_sentence", 50),
     ("ATR Key Sentence (English)", "atr_key_sentence_english", 50),
-    ("Reason", "reason", 60),
-    ("Formal Remark", "formal_remark", 45),
 ]
 
 RESOLVED_COLOURS = {"Yes": "C6EFCE", "No": "FFC7CE"}
@@ -45,7 +44,7 @@ def _style_header(cell):
     cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
 
-def _new_verdict_sheet(wb):
+def _new_observation_sheet(wb):
     ws = wb.create_sheet(SHEET, 0)
     for col, (header, _, width) in enumerate(COLUMNS, start=1):
         _style_header(ws.cell(1, col, header))
@@ -54,8 +53,8 @@ def _new_verdict_sheet(wb):
     return ws
 
 
-def _cell_value(key, verdict):
-    value = verdict.get(key)
+def _cell_value(key, observation):
+    value = observation.get(key)
     if key == "is_resolved":
         return "Yes" if value else "No"
     if key == "case_id" and str(value).isdigit():
@@ -63,9 +62,9 @@ def _cell_value(key, verdict):
     return value
 
 
-def _write_row(ws, row, verdict):
+def _write_row(ws, row, observation):
     for col, (_, key, _) in enumerate(COLUMNS, start=1):
-        cell = ws.cell(row, col, _cell_value(key, verdict))
+        cell = ws.cell(row, col, _cell_value(key, observation))
         cell.border = BORDER
         cell.alignment = Alignment(vertical="top", wrap_text=True)
     resolved_cell = ws.cell(row, 2)
@@ -97,15 +96,25 @@ def _rebuild_summary(wb):
     s.column_dimensions["C"].width = 10
 
 
-def update_workbook(verdicts, workbook_path: Path) -> tuple[int, int]:
-    """Append new verdicts / update existing ones. Returns (added, updated)."""
+def workbook_path(observation_dir: Path) -> Path:
+    """Observation/Gemini -> Observation/Gemini/Observations_Gemini.xlsx"""
+    return observation_dir / f"Observations_{observation_dir.name}.xlsx"
+
+
+def update_workbook(observations, workbook_path: Path) -> tuple[int, int]:
+    """Append new observations / update existing ones. Returns (added, updated)."""
     if workbook_path.exists():
         wb = load_workbook(workbook_path)
-        ws = wb[SHEET] if SHEET in wb.sheetnames else _new_verdict_sheet(wb)
+        ws = wb[SHEET] if SHEET in wb.sheetnames else None
+        headers = [header for header, _, _ in COLUMNS]
+        if ws is not None and [cell.value for cell in ws[1]] != headers:
+            del wb[SHEET]  # written with an older set of columns; rebuilt from the JSON files
+            ws = None
+        ws = ws or _new_observation_sheet(wb)
     else:
         wb = Workbook()
         wb.remove(wb.active)
-        ws = _new_verdict_sheet(wb)
+        ws = _new_observation_sheet(wb)
 
     existing_rows = {
         str(ws.cell(row, 1).value): row
@@ -114,8 +123,8 @@ def update_workbook(verdicts, workbook_path: Path) -> tuple[int, int]:
     }
 
     added = updated = 0
-    for verdict in verdicts:
-        case_id = str(verdict.get("case_id"))
+    for observation in observations:
+        case_id = str(observation.get("case_id"))
         row = existing_rows.get(case_id)
         if row is None:
             row = ws.max_row + 1
@@ -123,7 +132,7 @@ def update_workbook(verdicts, workbook_path: Path) -> tuple[int, int]:
             added += 1
         else:
             updated += 1
-        _write_row(ws, row, verdict)
+        _write_row(ws, row, observation)
 
     ws.auto_filter.ref = f"A1:{get_column_letter(len(COLUMNS))}{max(ws.max_row, 2)}"
     _rebuild_summary(wb)
@@ -137,13 +146,13 @@ def update_workbook(verdicts, workbook_path: Path) -> tuple[int, int]:
     return added, updated
 
 
-def sync_verdict_dir(verdict_dir: Path) -> Path:
-    verdicts = [
+def sync_observation_dir(observation_dir: Path, workbooks: list[Path]):
+    """Write every <id>Observation.json in observation_dir to each of the workbooks."""
+    observations = [
         json.loads(path.read_text(encoding="utf-8"))
-        for path in sorted(verdict_dir.glob("*Verdict.json"))
+        for path in sorted(observation_dir.glob("*Observation.json"))
     ]
-    workbook_path = verdict_dir / WORKBOOK_NAME
-    added, updated = update_workbook(verdicts, workbook_path)
-    print(f"Excel: {added} new row(s), {updated} refreshed -> {workbook_path}")
-    return workbook_path
+    for path in workbooks:
+        added, updated = update_workbook(observations, path)
+        print(f"Excel: {added} new row(s), {updated} refreshed -> {path}")
 

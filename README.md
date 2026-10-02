@@ -2,23 +2,29 @@
 
 OCR and grievance-checking tools for the PGRS (Public Grievance Redressal System).
 
-1. **OCR**: reads every Citizen and ATR (Action Taken Report) document, whether PDF or image, using **Google Gemini**. If Gemini blocks a page, the page is read locally with **Tesseract** instead.
-2. **Verdict**: compares each Citizen grievance with its ATR using a local **Ollama** model (`qwen2.5:7b-instruct`).
-3. **API**: a FastAPI endpoint that runs OCR on a single uploaded PDF.
+1. **OCR**: reads every Citizen and ATR (Action Taken Report) document, PDF or image, with **Google Gemini**. If Gemini blocks a page, that page is read locally with **Tesseract** instead.
+2. **Observation**: checks whether the ATR resolves the citizen's request, using the model you choose:
+
+| Model | Option | Notes |
+|---|---|---|
+| Gemini 3.6 Flash | `gemini` (default) | Most accurate, paid API |
+| Gemma 4 E2B | `gemma` | Free, runs locally on Ollama, ~30 s per case. Gives the same Resolved answer as Gemini on all 12 test cases. |
+
+3. **Web UI**: upload one grievance folder and get its text and observation in the browser.
 
 ## Project Structure
 
 ```text
 CeGOCR/
 ├── app/
-│   ├── ocr.py           # Gemini OCR + Tesseract fallback, cost tracking
-│   ├── batch_ocr.py     # OCR the whole PGRS folder
-│   ├── compare_atr.py   # Compare Citizen vs ATR with Ollama
-│   └── main.py          # FastAPI app
-├── PGRS/                # Input (not committed)
-├── PGRS_Output/         # OCR text (not committed)
-├── Verdict/             # Verdict JSON (not committed)
-├── outputs/             # API OCR text (not committed)
+│   ├── ocr.py            # Gemini OCR + Tesseract fallback; OCR the whole PGRS folder
+│   ├── observation.py    # Check ATR vs grievance with Gemini or Gemma
+│   └── excel.py          # Observations_<Model>.xlsx
+├── streamlit_app.py      # Web UI
+├── PGRS/                 # Input documents (not committed)
+├── PGRS_Output/          # Extracted text (not committed)
+├── Observation/          # Gemini/ and Gemma/: observations + Observations_<Model>.xlsx (not committed)
+├── Folder and Txt/       # Shareable copy: PGRS/ with Extracted Text, and Observation/ (not committed)
 ├── .env
 ├── requirements.txt
 └── README.md
@@ -27,12 +33,12 @@ CeGOCR/
 ## Requirements
 
 * Python 3.10+
-* A Google Gemini API key (used for OCR only)
+* A Google Gemini API key (OCR always uses Gemini)
 * [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) on `PATH`, with English (`eng`) and Kannada (`kan`) language data
-* [Ollama](https://ollama.com) running locally, with the verdict model pulled:
+* For the `gemma` option only: [Ollama](https://ollama.com) running locally, with the model pulled:
 
 ```powershell
-ollama pull qwen2.5:7b-instruct
+ollama pull gemma4:e2b
 ```
 
 ## Installation
@@ -54,7 +60,15 @@ GEMINI_OUTPUT_PRICE_PER_M=7.50    # USD per 1M output + thinking tokens
 TESSERACT_LANG=eng+kan
 ```
 
-## 1. OCR the PGRS Folder
+## Web UI
+
+```powershell
+streamlit run streamlit_app.py
+```
+
+Open `http://localhost:8501`, choose **Gemini** or **Gemma** in the sidebar, upload a grievance folder (one that contains `ATR` and `Citizen` subfolders), and click **Extract text and find observation**.
+
+## Command Line
 
 Input layout:
 
@@ -63,80 +77,40 @@ PGRS/<grievance_id>/ATR/<pdf or image>
 PGRS/<grievance_id>/Citizen/<pdf or image>
 ```
 
-```powershell
-python -m app.batch_ocr                  # all grievances
-python -m app.batch_ocr --case 379425    # one grievance (repeat --case for more)
-python -m app.batch_ocr --force          # redo files that already have output
-```
-
-Output:
-
-```text
-PGRS_Output/<grievance_id>/ATR.txt
-PGRS_Output/<grievance_id>/Citizen.txt
-PGRS_Output/summary.json                 # status, token usage and cost per file and in total
-```
-
-* Supported inputs are PDF, JPG/JPEG/JFIF, PNG, BMP, TIFF and WEBP.
-* Files that already have output are skipped, so you can re-run after a failure.
-* The console shows token counts and cost for each Gemini call. Check the prices against Google's official pricing page.
-
-## 2. Check Each ATR Against Its Grievance
+**1. OCR**
 
 ```powershell
-python -m app.compare_atr                  # all grievances
-python -m app.compare_atr --case 379609    # one grievance
-python -m app.compare_atr --force          # redo existing verdicts
+python -m app.ocr                  # all grievances
+python -m app.ocr --case 379425    # one grievance (repeat --case for more)
+python -m app.ocr --force          # redo files that already have text
 ```
 
-Output: `Verdict/<grievance_id>Verdict.json`, plus `Verdict/verdicts.json` with every grievance in one file.
+Writes `PGRS_Output/<id>/ATR.txt` and `Citizen.txt`, plus a copy in `Folder and Txt/PGRS/<id>/Extracted Text/`. `PGRS_Output/summary.json` records token usage and cost.
+
+**2. Observation**
+
+```powershell
+python -m app.observation                  # all grievances, Gemini
+python -m app.observation --model gemma    # all grievances, Gemma
+python -m app.observation --case 379609 --force
+```
+
+Each model has its own folder, so their results never mix: Gemini writes `<id>Observation.json` and a row in `Observations_Gemini.xlsx` to `Observation/Gemini/`, Gemma writes to `Observation/Gemma/` and `Observations_Gemma.xlsx`. The same is written to `Folder and Txt/Observation/`. A copy of both workbooks is also kept directly in `Observation/` (not in `Folder and Txt/Observation/`). `Observation/<Model>/observations.json` lists every grievance.
 
 ```json
 {
   "case_id": "379609",
-  "verdict": "REDIRECTED",
-  "verdict_meaning": "The office did nothing itself; it told the citizen to apply to, or forwarded the request to, another office (e.g. Gram Panchayat).",
   "is_resolved": false,
-  "final_action": "Instructed the citizen to apply to the Gram Panchayat for an ashram shelter.",
-  "complaint_summary": "...",
-  "reason": "...",
-  "formal_remark": "The grievance has been redirected to another authority without resolution; the matter remains pending."
+  "case_summary": "The citizen asked for a housing site to be allotted.",
+  "final_action_taken": "No site was allotted; the citizen was told to apply to the Gram Panchayat and the request was closed.",
+  "atr_key_sentence": "... ಕೋರಿಕೆ ಸಲ್ಲಿಸಲು ಎಂದು ತಿಳಿಯಪಡಿಸುತ್ತಾ ತಮ್ಮ ಉಲ್ಲೇಖಿತ ಮನವಿಯನ್ನು ವಿಲೇವಾರಿಗೊಳಿಸಲಾಗಿದೆ.",
+  "atr_key_sentence_english": "... you are informed to submit a request to the concerned Gram Panchayat, and your request is hereby disposed of."
 }
 ```
 
-| Verdict | Meaning | Resolved |
-|---|---|---|
-| `RESOLVED` | The request was fulfilled as asked | ✅ |
-| `PARTIALLY_RESOLVED` | Only part was done, or approved but the work is pending | ❌ |
-| `REDIRECTED` | The citizen was told to apply elsewhere, or the request was forwarded | ❌ |
-| `REJECTED` | The request was refused, e.g. not eligible | ❌ |
-| `CLOSED_WITHOUT_ACTION` | Closed with no action and no direction on where to go | ❌ |
-| `WRONG_ACTION` | Something other than what was asked was done | ❌ |
-| `UNCLEAR` | The documents are too unclear to judge | ❌ |
-
-> **Accuracy:** small local models can misread Kannada official documents. Have a person check the verdicts.
-
-## 3. OCR API
-
-```powershell
-uvicorn app.main:app --reload
-```
-
-Swagger UI is at `http://127.0.0.1:8000/docs`.
-
-| Endpoint | Description |
-|---|---|
-| `GET /` | API info |
-| `GET /health` | Health check |
-| `POST /ocr` | Upload a PDF (`multipart/form-data`, field `file`) and get its text back |
-
-```bash
-curl -X POST "http://127.0.0.1:8000/ocr" -F "file=@document.pdf"
-```
-
-Each result is also saved as `outputs/<uploaded-name>.txt`.
+> **Accuracy:** OCR of Kannada official documents is not perfect. Have a person check the observations.
 
 ## Security
 
 * Never put the API key in source code, and never commit `.env`.
-* `PGRS/`, `PGRS_Output/`, `Verdict/` and `outputs/` contain citizens' personal data and are excluded from git.
+* `PGRS/`, `PGRS_Output/`, `Observation/` and `Folder and Txt/` contain citizens' personal data and are excluded from git.

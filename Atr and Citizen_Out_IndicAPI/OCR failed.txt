@@ -1,0 +1,299 @@
+381175	OCR server failed on 432118_Document 334.pdf: HTTP 504: Service 'indicocr' timed out (7-page PDF)
+381194	OCR server failed on 423014_ATR_381194-IPGRS Application Details.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381205	OCR server failed on 432149_CamScanner 09-05-2026 11.24.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381214	OCR server failed on 432157_16.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381243	OCR server failed on 421592_ATR_381243-IPGRS Application Details.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381255	OCR server failed on 432192_New Doc 09-05-2026 11.34.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381257	OCR server failed on 396933_ATR_381257-MADHU.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381264	OCR server failed on 432200_ರೇಷ್ಮಾ ಆರ್‌ ದಲೀಲ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381266	IndicOCR server rejected 432202_6af8db33-1a7e-4af5-be82-ba2131fffbe3.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381275	OCR server failed on 432211_hanamqnti.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381276	OCR server failed on 432212_Adobe Scan 05 Sept 2026 (18).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381304	IndicOCR server rejected 432236_manula vi.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381323	OCR server failed on 432250_YASHODAMMA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381354	OCR server failed on 432275_59 (1).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381360	OCR server failed on 432280_SHAKIRA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381367	OCR server failed on 432285_s.no.15.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381383	OCR server failed on 432303_888.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381417	OCR server failed on 432330_W.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381420	IndicOCR server rejected 404632_ATR_381420-999999.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381433	OCR server failed on 430552_L3_381433-tah12134.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381472	OCR server failed on 432372_7.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381496	OCR server failed on 432391_IRAMMA 3372.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381508	OCR server failed on 432402_9008310415 MANE.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381513	IndicOCR server rejected 432407_manula vi.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381523	OCR server failed on 432417_Halima Abdul Hameed.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381525	OCR server failed on 439914_ATR_381525-381525.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381533	OCR server failed on 432423_5.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381534	OCR server failed on 396949_ATR_381534-NOOO.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381553	OCR server failed on 432438_WhatsApp Image 2026-09-05 at 11.40.39 AM (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381620	OCR server failed on 432490_New Doc 09-05-2026 11.50-compressed.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381615	IndicOCR server rejected 432485_manula vi.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381617	OCR server failed on 432487_RIZWANBANU HUBBALLI.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381608	IndicOCR server rejected 404707_ATR_381608-999999.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381640	IndicOCR server rejected 432507_6af8db33-1a7e-4af5-be82-ba2131fffbe3.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381690	OCR server failed on 432547_nagesh 9731422914.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381696	IndicOCR server rejected 432551_YALAMMA.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381713	OCR server failed on 432569_ನನ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381705	OCR server failed on 442840_L2_381705-381705.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381715	OCR server failed on 432571_DocScanner Sep 5, 2026 11-05 AM.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381716	OCR server failed on 432572_Re 11.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381717	OCR server failed on 395935_ATR_381717-ಗುರುರಾಜ20260909_17324824_0041.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381720	OCR server failed on 386138_L2_381720-IPGRS No.381720.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381722	OCR server failed on 436503_L2_381722-381722.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381724	OCR server failed on 402402_ATR_381724-Document 226.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381725	OCR server failed on 403224_L2_381725-New Doc 09-11-2026 11.02.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381727	OCR server failed on 432580_6.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381728	OCR server failed on 431246_L2_381728-ipgrs.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381729	OCR server failed on 432582_Whatsapp Scan 5 September 2026 at 11.59.08.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381730	OCR server failed on 392029_L2_381730-381730.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381731	OCR server failed on 448841_L2_381731-WhatsApp Image 2026-09-05 at 11.44.16 AM.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381732	OCR server failed on 403647_ATR_381732-New Doc 09-10-2026 18.46_18.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381733	OCR server failed on 427019_ATR_381733-New Doc 09-10-2026 15.58.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381734	OCR server failed on 432587_ಗೀತಾ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381736	OCR server failed on 444428_ATR_381736-narasimahamurthy.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381737	OCR server failed on 438986_ATR_381737-athani grivience.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381740	OCR server failed on 405367_L2_381740-Gademma Sirava.jpeg: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381741	OCR server failed on 432593_New Doc 09-05-2026 11.38.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381744	OCR server failed on 396322_ATR_381744-381744.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381747	OCR server failed on 450700_L3_381747-381747 (1).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381752	OCR server failed on 432602_H1.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381753	OCR server failed on 432603_ನೀಲಾ ಬಾಯಿ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381756	OCR server failed on 432606_ishappa pagar.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381757	OCR server failed on 432607_DocScanner Sep 5, 2026 11-51.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381758	OCR server failed on 392614_ATR_381758-New Doc 09-09-2026 10.25.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381777	IndicOCR server rejected 432625_YALAMMA.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381807	OCR server failed on 442800_L2_381807-382128.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381817	OCR server failed on 425885_ATR_381817-Fakruddin Sab.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381820	OCR server failed on 432654_Nandhisheesha.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381821	OCR server failed on 432655_IMG_20260905_0001.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381824	OCR server failed on 432659_ಭಾದಾಮಗಟ್ಟಿ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381825	OCR server failed on 432660_NILAPPA CHIMMALAGI.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381839	OCR server failed on 432669_New Doc 09-05-2026 11.49.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381849	OCR server failed on 432677_UMESH PUTTAPPA TOTAD.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381850	OCR server failed on 432678_WhatsApp Image 2026-09-05 at 12.00.17 PM (1).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381852	OCR server failed on 432680_ಸನಾ ಮುಳಗುಂದ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381857	OCR server failed on 432684_ರೇಖಾ ಸುರಳೇಶ್ವರ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381868	OCR server failed on 432693_WhatsApp Image 2026-09-05 at 11.50.10.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381875	IndicOCR server rejected 432699_YALAMMA.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+381886	OCR server failed on 432707_ANNAMMA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381897	OCR server failed on 432715_3.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381926	OCR server failed on 390880_ATR_381926-ssy prajaseve (3).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381934	OCR server failed on 432749_Scanned_20260905_114137.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381944	OCR server failed on 432757_h.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381949	OCR server failed on 432761_ನಟರಾಜು.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381977	OCR server failed on 432784_kavya.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+381990	OCR server failed on 432801_KUNTEPPA_0001.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382000	OCR server failed on 432809_PATREPPA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382005	OCR server failed on 432814_Shibi Rangamma.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382007	OCR server failed on 432815_VENKATESHPPA 1761.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382013	OCR server failed on 432821_img0007.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382030	OCR server failed on 423188_ATR_382030-IPGRS Application Details17-09-2026..pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382033	OCR server failed on 432841_16 Narayan Subbu.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382034	IndicOCR server rejected 404729_ATR_382034-88888888888888.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+382047	OCR server failed on 432853_H L Rathnakara.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382050	OCR server failed on 432856_RATNAMMA ANGAVADI.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382058	OCR server failed on 390732_ATR_382058-ssy prajaseve (3).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382070	OCR server failed on 432868_ಕೈರುನ್ನಿಸಾ ಬ ಕಿಲ್ಲೇದಾರ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382075	OCR server failed on 432873_New Doc 09-05-2026 12.00.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382077	OCR server failed on 432875_s.no.150.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382082	OCR server failed on 432878_ಶ್ರೀ ನಗರೆಶ್ವರ ದೇವಸ್ಥಾನ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382087	OCR server failed on 432883_3.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382101	OCR server failed on 432895_Rangamma_11zon.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382102	OCR server failed on 432896_1978.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382105	IndicOCR server rejected 432899_6.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+382106	OCR server failed on 442656_L2_382106-382106.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382128	OCR server failed on 432919_Untitled (4).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382134	OCR server failed on 432924_subramanya.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382157	OCR server failed on 432942_sairaba.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382170	OCR server failed on 432950_kavya.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382179	OCR server failed on 432958_Devappa.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382197	OCR server failed on 432975_ramdas arji.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382204	OCR server failed on 432981_ಸೀತಾ ಬಾಯಿ ತಾಂಡ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382221	OCR server failed on 433000_A.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382262	OCR server failed on 433036_MANJULA 3871.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382268	IndicOCR server rejected 433039_YALAMMA.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+382278	OCR server failed on 433048_S.N. Ramesh.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382330	OCR server failed on 433082_ಜೋನ್‌ ಪ್ರಾನ್ಸಿಸ್‌.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382331	OCR server failed on 433083_YASIN.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382332	OCR server failed on 433084_dursati.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382338	OCR server failed on 433090_File.PDF: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382339	OCR server failed on 425156_ATR_382339-ಎಂ ಕೆ ಭಟ್ಟ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382342	OCR server failed on 433094_hanamavva.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382348	OCR server failed on 390470_ATR_382348-ssy prajaseve (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382361	OCR server failed on 442722_L2_382361-382421.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382381	IndicOCR server rejected 433122_YALAMMA.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+382384	IndicOCR server rejected 433125_7.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+382388	OCR server failed on 433131_22.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382405	OCR server failed on 433144_8.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382414	OCR server failed on 433150_495.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382421	OCR server failed on 442681_L2_382421-383236.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382422	OCR server failed on 389889_ATR_382422-29. 382422.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382423	OCR server failed on 433156_ಮಾರುತಿ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382459	IndicOCR server rejected 433186_YALAMMA.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+382483	OCR server failed on 433205_DASAPPPA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382486	IndicOCR server rejected 409433_ATR_382486-HYRIGE VILLAG APPLI.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+382511	OCR server failed on 433229_New Doc 09-05-2026 12.00.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382525	OCR server failed on 433239_H L Rathnakara 2.pdf: HTTPConnectionPool(host='101.53.137.13', port=8004): Read timed out. (read timeout=600)
+382531	OCR server failed on 433243_siddayya -Turaganuru.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382541	OCR server failed on 433249_494.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382544	OCR server failed on 433252_nagamma.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382575	OCR server failed on 433274_Document 7.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382591	OCR server failed on 433291_DocScanner Sep 5, 2026 12-05 PM.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382592	IndicOCR server rejected 433292_YALAMMA.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+382595	OCR server failed on 433295_3.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382603	OCR server failed on 433300_ANJINAMMA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382635	OCR server failed on 426488_ATR_382635-IPGRS Application Details17-09-2026..pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382649	OCR server failed on 433340_ilovepdf_merged (68).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382660	IndicOCR server rejected 433345_8.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+382697	OCR server failed on 433370_rajibiya.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382708	OCR server failed on 433375_imambi.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382739	OCR server failed on 433396_6.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382755	OCR server failed on 433408_H R  RAJANN.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382779	OCR server failed on 433425_N LOKARAJ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382796	OCR server failed on 433436_shankravva.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382822	OCR server failed on 433457_SCAN_20260905_122220406.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382825	OCR server failed on 390681_ATR_382825-ssy prajaseve (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382832	OCR server failed on 433466_hghgh.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382848	OCR server failed on 433479_sudha barki laxmipura .pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382854	OCR server failed on 433485_T C Krishnamurthy.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382859	OCR server failed on 390719_ATR_382859-ssy prajaseve (3).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382873	OCR server failed on 433501_narayanamma.pdf: HTTPConnectionPool(host='101.53.137.13', port=8004): Read timed out. (read timeout=600)
+382895	OCR server failed on 433515_A3.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382905	OCR server failed on 405313_L3_382905-382905.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382911	OCR server failed on 433528_ಫಾತಿಮಾ ಎಮ್‌ ಸಯ್ಯದ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382914	OCR server failed on 416517_ATR_382914-38a4d791-c98c-46e9-8866-6f446f44ed60.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382922	OCR server failed on 433539_New Doc 09-05-2026 12.26.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382924	OCR server failed on 433541_venkataramana naik_compressed.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382929	OCR server failed on 433544_ಹಹ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382930	OCR server failed on 433545_Pramila wlo yogesh.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382937	OCR server failed on 433551_7.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382953	OCR server failed on 433561_DocScanner 5 Sept 2026 12-25 pm.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382971	OCR server failed on 433576_TIPPANNA WALIKAR.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382980	OCR server failed on 433582_04 ningaraju.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382985	OCR server failed on 433586_Praveen Ramachandra Nayak.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+382986	OCR server failed on 433587_Kasagi Jaminu.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383008	OCR server failed on 433608_Christina Kantharaj.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383010	OCR server failed on 433609_road pdf.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383012	OCR server failed on 433610_application 07.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383015	OCR server failed on 433613_sainaj M Badedavalaji.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383017	OCR server failed on 433614_mahanthamma.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383020	OCR server failed on 397437_ATR_383020-66.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383023	OCR server failed on 406204_ATR_383023-prajaseve.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383031	OCR server failed on 433621_timmavva.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383032	OCR server failed on 386300_ATR_383032-pension pdf (1).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383035	OCR server failed on 433625_New Doc 09-05-2026 12.21.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383037	OCR server failed on 396895_ATR_383037-383037.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383039	OCR server failed on 445333_ATR_383039-DocScanner 24 Sept 2026 12-36.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383040	OCR server failed on 385861_ATR_383040-pension pdf (1).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383041	OCR server failed on 414704_L2_383041-img20260909_10405345.jpg: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383045	OCR server failed on 390791_ATR_383045-383045_0001.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383050	OCR server failed on 433637_SARASWATHI.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383053	OCR server failed on 433639_sHIVKUMAR HOME.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383054	OCR server failed on 433640_G.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383057	OCR server failed on 433646_WhatsApp Image 2026-09-04 at 11.54.51 PM.jpeg: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383059	OCR server failed on 387939_ATR_383059-New Doc 09-07-2026 16.32_compressed.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383060	OCR server failed on 403940_ATR_383060-383060.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383061	OCR server failed on 393634_ATR_383061-WhatsApp Image 2026-09-09 at 12.59.31 PM.jpeg: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383062	OCR server failed on 433651_JALAMMA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383069	OCR server failed on 433657_RFR.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383071	OCR server failed on 396437_ATR_383071-383071.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383082	OCR server failed on 433667_aysha.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383083	OCR server failed on 418247_ATR_383083-IPGRS - lakya.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383085	OCR server failed on 423691_L2_383085-mahesh12.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383086	OCR server failed on 419135_ATR_383086-pinchni 1709 (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383087	OCR server failed on 449394_L3_383087-KUDLIGI IPGRS.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383088	OCR server failed on 424529_ATR_383088-Image to PDF 20260918 11.07.49 (1)-1.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383091	OCR server failed on 391487_ATR_383091-img20260908_17354267.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383092	OCR server failed on 433676_Kusuma.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383093	OCR server failed on 404818_ATR_383093-Document 20 (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383096	OCR server failed on 433682_New Doc 09-05-2026 12.27.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383097	OCR server failed on 396371_ATR_383097-AnyScanner_09_09_2026(3).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383099	OCR server failed on 433685_Jyoti barki laxmipura .pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383102	OCR server failed on 433687_New Doc 09-05-2026 12.20.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383104	OCR server failed on 424265_ATR_383104-mahiti ltr.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383106	OCR server failed on 404320_ATR_383106-383106_compressed (1).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383107	OCR server failed on 417269_L2_383107-DocScanner_16_Sept_2026_2MB.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383109	OCR server failed on 433693_bevinal sh (1).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383111	OCR server failed on 403734_L2_383111-New Doc 09-11-2026 11.02.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383115	OCR server failed on 403716_ATR_383115-383115.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383116	OCR server failed on 387051_ATR_383116-ಸುಂದ್ರಮ್ಮ.jpeg: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383121	OCR server failed on 433701_01 002.jpg: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383122	OCR server failed on 433702_08.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383124	OCR server failed on 448749_L2_383124-05.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383126	OCR server failed on 433705_DocScanner Sep 5, 2026 12-13 PM.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383127	OCR server failed on 397590_ATR_383127-PDF_COM_202609091744156857.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383128	OCR server failed on 409340_ATR_383128-383674.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383132	OCR server failed on 404009_ATR_383132-Sogala.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383133	OCR server failed on 445218_L2_383133-383133.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383136	OCR server failed on 433717_shivalingappa madar.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383140	OCR server failed on 433720_1.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383159	OCR server failed on 433738_New Doc 09-05-2026 12.35.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383163	OCR server failed on 433741_Veeranna.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383165	OCR server failed on 397446_ATR_383165-70.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383166	OCR server failed on 427231_ATR_383166-somshekhar.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383168	OCR server failed on 390704_ATR_383168-ssy prajaseve (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383169	OCR server failed on 433749_chowdamma.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383171	OCR server failed on 406584_ATR_383171-ಕುಸುಬೂರು ಗ್ರಾಮ 48.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383172	OCR server failed on 433751_img211.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383173	OCR server failed on 390343_ATR_383173-383173.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383191	OCR server failed on 399854_ATR_383191-ರೆಣುಕಾ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383192	OCR server failed on 433767_5.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383229	OCR server failed on 433798_10.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383236	OCR server failed on 442666_L2_383236-383236.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383237	OCR server failed on 421735_ATR_383237-IPGRS Application Details.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383243	OCR server failed on 394762_ATR_383243-Krishna Shivaram.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383247	OCR server failed on 433814_BASAVARAJ ULLAGADDI.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383276	OCR server failed on 433839_08 C S Rangaswamy.pdf: HTTPConnectionPool(host='101.53.137.13', port=8004): Read timed out. (read timeout=600)
+383288	OCR server failed on 433848_H HULIGAMMA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383300	OCR server failed on 433859_CHANNAPPA 3222.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383301	OCR server failed on 433860_02.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383302	OCR server failed on 419114_ATR_383302-pinchni 1709 (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383307	OCR server failed on 433865_vani ks.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383311	OCR server failed on 433868_ತ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383313	OCR server failed on 433870_ುಿು್ಿ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383314	OCR server failed on 452143_ATR_383314-Document 466 (1).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383320	IndicOCR server rejected 404770_ATR_383320-89898989.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+383326	OCR server failed on 433881_alla bakash penction.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383342	OCR server failed on 433895_New Doc 09-05-2026 12.35.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383343	OCR server failed on 433896_New Doc 09-05-2026 10.55 (5).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383365	OCR server failed on 433911_venkataramana naik_compressed.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383381	OCR server failed on 433923_rajiyabegama.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383435	OCR server failed on 433968_Bagadageri.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383436	OCR server failed on 433969_C BORAYYA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383441	OCR server failed on 392398_ATR_383441-383441.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383471	OCR server failed on 433999_ack 34.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383484	OCR server failed on 434012_ನಾಗೇಶ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383485	OCR server failed on 434013_49.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383529	OCR server failed on 421805_ATR_383529-IPGRS Application Details.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383535	OCR server failed on 434054_MOTILAALSA KALBURGI.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383542	OCR server failed on 434057_RAJAMMA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383544	OCR server failed on 404232_L3_383544-ipgrs ans.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383546	OCR server failed on 434061_10.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383576	OCR server failed on 411418_ATR_383576-2025-26 BUILDING REPAIR ORDER ZP BLY.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383602	OCR server failed on 434115_img20260905_12415976.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383632	OCR server failed on 434144_JAYAMMA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383635	OCR server failed on 434145_shivanand (1)_compressed.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383659	OCR server failed on 390399_ATR_383659-ssy prajaseve (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383660	OCR server failed on 434163_usha.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383694	OCR server failed on 390418_ATR_383694-ssy prajaseve (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383705	OCR server failed on 434208_Narayan Masti Naik.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383707	OCR server failed on 434211_anju.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383711	OCR server failed on 434214_File.PDF: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383714	OCR server failed on 434216_BHAGYA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383717	OCR server failed on 434218_Document 566.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383754	OCR server failed on 434250_GANGAMMA.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383758	OCR server failed on 434254_DocScanner 5 Sept 2026 12-25 pm (1).pdf: HTTPConnectionPool(host='101.53.137.13', port=8004): Read timed out. (read timeout=600)
+383767	OCR server failed on 434267_New Doc 09-05-2026 12.47.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383789	OCR server failed on 434288_ುಪುಿಪ.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383791	OCR server failed on 434290_H Linagappa.pdf: HTTPConnectionPool(host='101.53.137.13', port=8004): Read timed out. (read timeout=600)
+383808	OCR server failed on 434304_NARAYANA KSHTRI.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383833	OCR server failed on 390373_ATR_383833-ssy prajaseve (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383853	OCR server failed on 434342_DOC.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383855	IndicOCR server rejected 434343_10.jfif: HTTP 400 {"detail":"Unsupported file type '.jfif'. Use one of: .png, .jpg, .jpeg, .webp, .bmp, .tif, .tiff, .pdf"}
+383912	OCR server failed on 434391_Hemalatha.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383922	OCR server failed on 421843_ATR_383922-IPGRS Application Details.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383946	OCR server failed on 434418_SANIYA KHANUM 2959.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383951	OCR server failed on 434421_ilovepdf_merged (73).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383952	OCR server failed on 434422_New Doc 09-05-2026 12.47-1.pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}
+383987	OCR server failed on 390354_ATR_383987-ssy prajaseve (2).pdf: HTTP 504: {"detail":"Service 'indicocr' timed out. The model may be busy."}

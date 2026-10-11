@@ -106,6 +106,7 @@ def show_result(run: dict):
     else:
         st.error("Not resolved")
 
+    st.markdown(f"**Scheme:** {observation['scheme']} ({observation['scheme_english']})")
     st.markdown(f"**Case summary:** {observation['case_summary']}")
     st.markdown(f"**Final action taken:** {observation['final_action_taken']}")
     st.markdown("**ATR key sentence (Kannada)**")

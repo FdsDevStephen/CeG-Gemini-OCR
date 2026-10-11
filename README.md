@@ -1,16 +1,21 @@
 # CeG Gemini OCR
 
+
+
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu130   # match that machine's CUDA
+pip install -r indic-ocr/requirements.txt opencv-python fpdf2 pymupdfpip install -r requirements.txt
+
 OCR and grievance-checking tools for the PGRS (Public Grievance Redressal System).
 
 1. **OCR**: reads every Citizen and ATR (Action Taken Report) document, PDF or image, with **Google Gemini**. If Gemini blocks a page, that page is read locally with **Tesseract** instead.
 2. **Observation**: checks whether the ATR resolves the citizen's request, using the model you choose:
 
-| Model | Option | Notes |
-|---|---|---|
-| Gemini 3.6 Flash | `gemini` (default) | Most accurate, paid API |
-| Gemma 4 E2B | `gemma` | Free, runs locally on Ollama, ~30 s per case. Gives the same Resolved answer as Gemini on all 12 test cases. |
+| Model            | Option              | Notes                                                                                                           |
+| ---------------- | ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Gemma 4 E2B      | `gemma` (default) | Free, runs locally on Ollama, ~30-75 s per case. Gives the same Resolved answer as Gemini on all 13 test cases. |
+| Gemini 3.6 Flash | `gemini`          | Most accurate, paid API                                                                                         |
 
-3. **Web UI**: upload one grievance folder and get its text and observation in the browser.
+Run both steps together with one command, `python pipeline.py` (see [Pipeline](#pipeline)), or in the browser with the web UI.
 
 ## Project Structure
 
@@ -20,6 +25,7 @@ CeGOCR/
 │   ├── ocr.py            # Gemini OCR + Tesseract fallback; OCR the whole PGRS folder
 │   ├── observation.py    # Check ATR vs grievance with Gemini or Gemma
 │   └── excel.py          # Observations_<Model>.xlsx
+├── pipeline.py           # One command: pick a folder -> OCR -> observation
 ├── streamlit_app.py      # Web UI
 ├── PGRS/                 # Input documents (not committed)
 ├── PGRS_Output/          # Extracted text (not committed)
@@ -60,6 +66,20 @@ GEMINI_OUTPUT_PRICE_PER_M=7.50    # USD per 1M output + thinking tokens
 TESSERACT_LANG=eng+kan
 ```
 
+## Pipeline
+
+One command does everything: pick a folder, OCR it, then find the observation.
+
+```powershell
+python pipeline.py                         # opens a folder picker
+python pipeline.py "D:/Scans/379609"       # one grievance folder
+python pipeline.py "D:/Scans"              # a folder of grievance folders
+python pipeline.py --model gemini          # observation with Gemini instead of Gemma
+python pipeline.py --force                 # redo OCR and observation
+```
+
+The folder can be one grievance (it contains `ATR` and `Citizen` subfolders) or a folder of grievances. Its files are copied into `PGRS/` and `Folder and Txt/PGRS/`, OCR'd, and checked. Text that was already extracted and observations that already exist are reused unless you pass `--force`.
+
 ## Web UI
 
 ```powershell
@@ -68,7 +88,9 @@ streamlit run streamlit_app.py
 
 Open `http://localhost:8501`, choose **Gemini** or **Gemma** in the sidebar, upload a grievance folder (one that contains `ATR` and `Citizen` subfolders), and click **Extract text and find observation**.
 
-## Command Line
+## Running the Steps Separately
+
+`pipeline.py` runs both of these for you; use them to redo just one step for everything in `PGRS/`.
 
 Input layout:
 
@@ -90,8 +112,8 @@ Writes `PGRS_Output/<id>/ATR.txt` and `Citizen.txt`, plus a copy in `Folder and 
 **2. Observation**
 
 ```powershell
-python -m app.observation                  # all grievances, Gemini
-python -m app.observation --model gemma    # all grievances, Gemma
+python -m app.observation                  # all grievances, Gemma (needs Ollama running)
+python -m app.observation --model gemini   # all grievances, Gemini
 python -m app.observation --case 379609 --force
 ```
 
@@ -101,6 +123,8 @@ Each model has its own folder, so their results never mix: Gemini writes `<id>Ob
 {
   "case_id": "379609",
   "is_resolved": false,
+  "scheme": "ವಸತಿ ಯೋಜನೆ",
+  "scheme_english": "Housing scheme (site allotment)",
   "case_summary": "The citizen asked for a housing site to be allotted.",
   "final_action_taken": "No site was allotted; the citizen was told to apply to the Gram Panchayat and the request was closed.",
   "atr_key_sentence": "... ಕೋರಿಕೆ ಸಲ್ಲಿಸಲು ಎಂದು ತಿಳಿಯಪಡಿಸುತ್ತಾ ತಮ್ಮ ಉಲ್ಲೇಖಿತ ಮನವಿಯನ್ನು ವಿಲೇವಾರಿಗೊಳಿಸಲಾಗಿದೆ.",

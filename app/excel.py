@@ -23,6 +23,9 @@ SUMMARY_SHEET = "Summary"
 COLUMNS = [
     ("Case ID", "case_id", 12),
     ("Resolved?", "is_resolved", 11),
+    ("Rating", "rating", 10),
+    ("Scheme (Kannada)", "scheme", 30),
+    ("Scheme (English)", "scheme_english", 30),
     ("Case Summary", "case_summary", 50),
     ("Final Action Taken", "final_action_taken", 50),
     ("ATR Key Sentence (Kannada)", "atr_key_sentence", 50),
@@ -30,6 +33,8 @@ COLUMNS = [
 ]
 
 RESOLVED_COLOURS = {"Yes": "C6EFCE", "No": "FFC7CE"}
+RATING_STARS = "★"
+STAR_FONT = Font(color="F4B400", size=14)
 
 _thin = Side(style="thin", color="BFBFBF")
 BORDER = Border(left=_thin, right=_thin, top=_thin, bottom=_thin)
@@ -57,6 +62,10 @@ def _cell_value(key, observation):
     value = observation.get(key)
     if key == "is_resolved":
         return "Yes" if value else "No"
+    if key == "rating":
+        # Observations saved before ratings existed: 3 if resolved, else 1.
+        stars = value or (3 if observation.get("is_resolved") else 1)
+        return RATING_STARS * stars
     if key == "case_id" and str(value).isdigit():
         return int(value)
     return value
@@ -70,6 +79,9 @@ def _write_row(ws, row, observation):
     resolved_cell = ws.cell(row, 2)
     resolved_cell.fill = PatternFill("solid", fgColor=RESOLVED_COLOURS[resolved_cell.value])
     resolved_cell.font = Font(bold=True)
+    rating_cell = ws.cell(row, 3)
+    rating_cell.font = STAR_FONT
+    rating_cell.alignment = Alignment(horizontal="center", vertical="top")
 
 
 def _rebuild_summary(wb):
@@ -137,6 +149,7 @@ def update_workbook(observations, workbook_path: Path) -> tuple[int, int]:
     ws.auto_filter.ref = f"A1:{get_column_letter(len(COLUMNS))}{max(ws.max_row, 2)}"
     _rebuild_summary(wb)
 
+    workbook_path.parent.mkdir(parents=True, exist_ok=True)
     try:
         wb.save(workbook_path)
     except PermissionError:

@@ -1,0 +1,7 @@
+ಕರ್ನಾಟಕ ಸರ್ಕಾರ
+
+Serial / No. | Ration_Card_Number | Applicant_Name | Payment_Month | Beneficiary_ID | Bank_Name | Payment_Status | Status | logdate
+
+1 | 550500158777 | Vani B S | June | 3661003413928 | PRAGATHI / KRISHNA / GRAMIN BANK | Success | 11-08- / 2026 / 05:22:52
+
+Scanned with OKEN Scanner

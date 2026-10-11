@@ -5,9 +5,20 @@ __pycache__/
 venv/
 outputs/
 PGRS/
+PGRS */
 PGRS_Output/
+PGRS*_Out/
+Atr and Citizen_Out/
 Verdict/
 Observation/
 Folder and Txt/
 Verdict_Qwen/
 Verdict_gemma4_e2b/
+PGRS30_Out/
+Observation1/*.log
+pgrs30_txt/
+Observation1/
+
+Atr and Citizen_Out_API/
+Atr and Citizen_Out_API/
+PGRS30_Qwen3_14B_v2.xlsx

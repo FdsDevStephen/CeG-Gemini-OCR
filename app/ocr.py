@@ -36,10 +36,14 @@ load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 
-if not API_KEY:
-    raise RuntimeError("GEMINI_API_KEY is not set in the .env file.")
+# Only Gemini OCR and the gemini model need the key; Indic-OCR runs without it.
+client = genai.Client(api_key=API_KEY) if API_KEY else None
 
-client = genai.Client(api_key=API_KEY)
+
+def gemini_client():
+    if client is None:
+        raise RuntimeError("GEMINI_API_KEY is not set in the .env file.")
+    return client
 
 
 OCR_PROMPT = """
@@ -104,17 +108,36 @@ def record_usage(response) -> None:
     })
 
 
-def run_ocr(pdf_file, prompt, temperature=1.0):
-    response = client.models.generate_content(
-        model=GEMINI_MODEL,
-        contents=[
-            pdf_file,
-            prompt,
-        ],
-        config={
-            "temperature": temperature,
-        },
+RETRY_WAITS = (30, 60, 120, 240)  # seconds to wait before each retry of a busy / unreachable API
+
+
+def is_temporary_error(error: Exception) -> bool:
+    """Gemini overloaded or rate-limited (503 / 429), or the network dropped for a moment."""
+    text = str(error)
+    return any(code in text for code in ("503", "429", "UNAVAILABLE", "RESOURCE_EXHAUSTED")) or isinstance(
+        error, (ConnectionError, TimeoutError, OSError)
     )
+
+
+def run_ocr(pdf_file, prompt, temperature=1.0):
+    for wait in (*RETRY_WAITS, None):
+        try:
+            response = gemini_client().models.generate_content(
+                model=GEMINI_MODEL,
+                contents=[
+                    pdf_file,
+                    prompt,
+                ],
+                config={
+                    "temperature": temperature,
+                },
+            )
+            break
+        except Exception as exc:
+            if wait is None or not is_temporary_error(exc):
+                raise
+            print(f"    Gemini busy or unreachable ({str(exc)[:60]}); retrying in {wait}s", flush=True)
+            time.sleep(wait)
     record_usage(response)
     return response
 
@@ -167,7 +190,7 @@ def extract_text_from_pdf(pdf_path: Path) -> str:
             with open(chunk_path, "wb") as chunk_file:
                 writer.write(chunk_file)
 
-            pdf = client.files.upload(file=str(chunk_path))
+            pdf = gemini_client().files.upload(file=str(chunk_path))
 
             try:
                 response = run_ocr(
@@ -203,7 +226,7 @@ def extract_text_from_pdf(pdf_path: Path) -> str:
                 with open(single_page_path, "wb") as single_file:
                     single_writer.write(single_file)
 
-                single_pdf = client.files.upload(
+                single_pdf = gemini_client().files.upload(
                     file=str(single_page_path)
                 )
 
@@ -293,11 +316,25 @@ def ocr_file(file_path: Path) -> str:
         return extract_text_from_pdf(pdf_path)
 
 
-def ocr_files(files) -> str:
+OCR_ENGINES = ("indicapi", "api", "indic", "gemini")  # indicapi / api: hosted OCR servers (app/ocr_api.py); indic: the local model (app/indic.py)
+
+
+def ocr_files(files, engine: str = "gemini") -> str:
     """OCR several files into one text, each headed by its file name when there are several."""
+    if engine == "indic":
+        from app import indic
+        read = indic.ocr_file
+    elif engine == "api":
+        from app import ocr_api
+        read = ocr_api.ocr_file
+    elif engine == "indicapi":
+        from app import ocr_api
+        read = ocr_api.ocr_file_indic
+    else:
+        read = ocr_file
     texts = []
     for file_path in files:
-        text = ocr_file(file_path)
+        text = read(file_path)
         if len(files) > 1:
             text = f"===== {file_path.name} =====\n\n{text}"
         texts.append(text)

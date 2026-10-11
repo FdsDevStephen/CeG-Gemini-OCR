@@ -1,0 +1,7 @@
+Application Tracker | Mark as Death | Death name match | Logout
+
+510500231110
+
+Serial / No. | Ration_Card_Number | Applicant_Name | Payment_Month | Beneficiary_ID | Bank_Name | Payment_Status | Status | logdate
+
+1 | 510500231110 | Kasturi Mallappa / Biradar | 3661003220051 | Death | 09-09-2026 / 12:54:59

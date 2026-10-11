@@ -1,0 +1,9 @@
+4.47141
+
+ಕರ್ನಾಟಕ ಸರ್ಕಾರ
+
+Serial / No. | Ration_Card_Number | Applicant_Name | Payment_Month | Beneficiary_ID | Bank_Name | Payment_Status | Status | logdate
+
+1 | 550500170696 | Marakka | June | 3661009755214 | STATE BANK / OF INDIA | Success | 11-08- / 2026 / 05:25:08
+
+Scanned with OKEN Scanner

@@ -18,7 +18,7 @@ PGRS30_Out/
 Observation1/*.log
 pgrs30_txt/
 Observation1/
-
+ipgrs_ouput/
 Atr and Citizen_Out_API/
 Atr and Citizen_Out_IndicAPI/
 PGRS30_Qwen3_14B_v2.xlsx

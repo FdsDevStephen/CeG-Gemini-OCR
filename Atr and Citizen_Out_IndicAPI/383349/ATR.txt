@@ -1,5 +1,0 @@
-ಕರ್ನಾಟಕ ಸರ್ಕಾರ
-
-Serial No. | Ration_Card_Number | Applicant_Name | Payment_Month | Beneficiary_ID | Bank_Name | Payment_Status | Status | logdate
-
-1 | 510300135899 | Satyava Kolakar | Rejected due to IT-GST Payee | 11-09-2026 14:16:33

@@ -1,9 +1,0 @@
-ಕರ್ನಾಟಕ ಸರ್ಕಾರ
-
-Application Tracker | Mark as Death | Death name match | Logout
-
-Serial No. | Ration_Card_Number | Applicant_Name | Payment_Month | Beneficiary_ID | Bank_Name | Payment_Status | Status | logdate
-
-1 | 550500202696 | P Reshma | June | 36610014362567 | CANARA BANK | Success | 11-08-2026 05:21:51
-
-##

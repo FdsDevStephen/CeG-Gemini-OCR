@@ -1,7 +1,0 @@
-ಕರ್ನಾಟಕ ಸರ್ಕಾರ
-
-Serial / No. | Ration_Card_Number | Applicant_Name | Payment_Month | Beneficiary_ID | Bank_Name | Payment_Status | Status | logdate
-
-1 | 550500169405 | Hiriyakka | June | 36610011694759 | STATE BANK / OF INDIA | Success | 11-08- / 2026 / 05:25:23
-
-Scanned with OKEN Scanner

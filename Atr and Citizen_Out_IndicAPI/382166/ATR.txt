@@ -1,7 +1,0 @@
-Application Tracker | Mark as Death | Death name match | Logout
-
-510500285152
-
-Serial / No. | Ration_Card_Number | Applicant_Name | Payment_Month | Beneficiary_ID | Bank_Name | Payment_Status | Status | logdate
-
-1 | 510500285152 | Jyoti Gopal Gasti | June | 3661009865934 | PRAGATHI KRISHNA / GRAMIN BANK | Success | 09-08-2026 / 04:23:13

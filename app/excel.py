@@ -1,4 +1,4 @@
-"""Keep Observations_<Model>.xlsx in sync with the <grievance_id>Observation.json files in the same folder.
+"""Write observations to Excel: every script adds its rows to the one workbook, MERGED_WORKBOOK.
 
 New grievances are appended as rows; a grievance that is already in the sheet
 (e.g. re-checked with --force) has its row updated in place. Rows already in
@@ -6,9 +6,16 @@ the sheet are never removed, so the workbook keeps growing across runs.
 
 Used by app.observation: each observation is written to the sheet as soon as it
 is produced, and the whole observation folder is re-synced at the end of the run.
+
+The Source column (after COLUMNS) says which run wrote each row, e.g.
+"Atr and Citizen Observation_Mandar". A lock file next to the workbook keeps two
+runs at the same time from overwriting each other's rows.
 """
 
 import json
+import os
+import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from openpyxl import Workbook, load_workbook
@@ -16,6 +23,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 
+MERGED_WORKBOOK = Path(__file__).resolve().parent.parent / "Observation" / "All Observations Merged.xlsx"
 SHEET = "Observations"
 SUMMARY_SHEET = "Summary"
 
@@ -31,6 +39,9 @@ COLUMNS = [
     ("ATR Key Sentence (Kannada)", "atr_key_sentence", 50),
     ("ATR Key Sentence (English)", "atr_key_sentence_english", 50),
 ]
+
+SOURCE_HEADER, SOURCE_WIDTH = "Source", 30
+LOCK_STALE_SECONDS = 600  # a lock older than this was left by a run that crashed
 
 RESOLVED_COLOURS = {"Yes": "C6EFCE", "No": "FFC7CE"}
 RATING_STARS = "★"
@@ -108,18 +119,45 @@ def _rebuild_summary(wb):
     s.column_dimensions["C"].width = 10
 
 
-def workbook_path(observation_dir: Path) -> Path:
-    """Observation/Gemini -> Observation/Gemini/Observations_Gemini.xlsx"""
-    return observation_dir / f"Observations_{observation_dir.name}.xlsx"
+@contextmanager
+def _locked(path: Path):
+    """Only one process reads-and-saves the workbook at a time."""
+    lock = path.with_name(path.name + ".lock")
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    while True:
+        try:
+            os.close(os.open(lock, os.O_CREAT | os.O_EXCL))
+            break
+        except FileExistsError:
+            try:
+                if time.time() - lock.stat().st_mtime > LOCK_STALE_SECONDS:
+                    lock.unlink()
+                    continue
+            except FileNotFoundError:
+                continue
+            time.sleep(0.5)
+    try:
+        yield
+    finally:
+        lock.unlink(missing_ok=True)
 
 
-def update_workbook(observations, workbook_path: Path) -> tuple[int, int]:
-    """Append new observations / update existing ones. Returns (added, updated)."""
+def update_workbook(observations, workbook_path: Path = MERGED_WORKBOOK, source: str | None = None,
+                    only_new: bool = False) -> tuple[int, int]:
+    """Append new observations / update existing ones (only_new: leave rows already there).
+
+    source fills the Source column. Returns (added, updated).
+    """
+    with _locked(workbook_path):
+        return _update_workbook(observations, workbook_path, source, only_new)
+
+
+def _update_workbook(observations, workbook_path, source, only_new):
+    headers = [header for header, _, _ in COLUMNS]
     if workbook_path.exists():
         wb = load_workbook(workbook_path)
         ws = wb[SHEET] if SHEET in wb.sheetnames else None
-        headers = [header for header, _, _ in COLUMNS]
-        if ws is not None and [cell.value for cell in ws[1]] != headers:
+        if ws is not None and [cell.value for cell in ws[1]][: len(headers)] != headers:
             del wb[SHEET]  # written with an older set of columns; rebuilt from the JSON files
             ws = None
         ws = ws or _new_observation_sheet(wb)
@@ -127,6 +165,13 @@ def update_workbook(observations, workbook_path: Path) -> tuple[int, int]:
         wb = Workbook()
         wb.remove(wb.active)
         ws = _new_observation_sheet(wb)
+
+    source_col = len(COLUMNS) + 1
+    has_source = ws.cell(1, source_col).value == SOURCE_HEADER
+    if source and not has_source:
+        _style_header(ws.cell(1, source_col, SOURCE_HEADER))
+        ws.column_dimensions[get_column_letter(source_col)].width = SOURCE_WIDTH
+        has_source = True
 
     existing_rows = {
         str(ws.cell(row, 1).value): row
@@ -142,11 +187,18 @@ def update_workbook(observations, workbook_path: Path) -> tuple[int, int]:
             row = ws.max_row + 1
             existing_rows[case_id] = row
             added += 1
+        elif only_new:
+            continue
         else:
             updated += 1
         _write_row(ws, row, observation)
+        if has_source and source:
+            cell = ws.cell(row, source_col, source)
+            cell.border = BORDER
+            cell.alignment = Alignment(vertical="top", wrap_text=True)
 
-    ws.auto_filter.ref = f"A1:{get_column_letter(len(COLUMNS))}{max(ws.max_row, 2)}"
+    last_col = source_col if has_source else len(COLUMNS)
+    ws.auto_filter.ref = f"A1:{get_column_letter(last_col)}{max(ws.max_row, 2)}"
     _rebuild_summary(wb)
 
     workbook_path.parent.mkdir(parents=True, exist_ok=True)
@@ -159,13 +211,11 @@ def update_workbook(observations, workbook_path: Path) -> tuple[int, int]:
     return added, updated
 
 
-def sync_observation_dir(observation_dir: Path, workbooks: list[Path]):
-    """Write every <id>Observation.json in observation_dir to each of the workbooks."""
+def sync_observation_dir(observation_dir: Path, workbook: Path = MERGED_WORKBOOK, source: str | None = None):
+    """Add every <id>Observation.json in observation_dir that is not in the workbook yet."""
     observations = [
         json.loads(path.read_text(encoding="utf-8"))
         for path in sorted(observation_dir.glob("*Observation.json"))
     ]
-    for path in workbooks:
-        added, updated = update_workbook(observations, path)
-        print(f"Excel: {added} new row(s), {updated} refreshed -> {path}")
-
+    added, _ = update_workbook(observations, workbook, source, only_new=True)
+    print(f"Excel: {added} new row(s) -> {workbook}")

@@ -12,7 +12,7 @@ Each batch keeps its own folders, apart from PGRS/ and PGRS_Output/:
     Observation/Observation1/Observation1.xlsx, Observation1.json, <id>Observation.json, batch.json
     Folder and Txt/Observation/Observation1/       a copy of the folder above
 A later batch of the same size gets "(Observation2)" added to its folder names.
-The batch's observations go only to its own Excel, not to Observations_<Model>.xlsx.
+The batch's observations are also added to Observation/All Observations Merged.xlsx (Source: Observation1).
 
 Usage:
     python sample_batch.py                        # 30 random grievances, Gemma
@@ -30,7 +30,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from app import ocr
-from app.excel import update_workbook
+from app.excel import MERGED_WORKBOOK, update_workbook
 from app.observation import MODELS, OBSERVATION_ROOTS, check_case
 from pipeline import SUPPORTED, document_folders, ocr_case
 
@@ -171,6 +171,7 @@ def main():
     )
     workbook = batch_dir / f"{batch_dir.name}.xlsx"
     update_workbook(observations, workbook)
+    update_workbook(observations, MERGED_WORKBOOK, source=batch_dir.name)
     shutil.copy2(workbook, ocr.SHARE_DIR / workbook.name)
     shutil.copytree(batch_dir, OBSERVATION_ROOTS[1] / batch_dir.name, dirs_exist_ok=True)
 

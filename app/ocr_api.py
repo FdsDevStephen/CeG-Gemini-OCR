@@ -19,27 +19,32 @@ import html
 import os
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import urljoin
 
 import requests
 from dotenv import load_dotenv
+from pypdf import PdfReader
 
 load_dotenv()
 
 OCR_API_URL = os.getenv("OCR_API_URL", "http://101.53.140.252/ocr")
 INDIC_OCR_API_URL = os.getenv("INDIC_OCR_API_URL", "http://101.53.137.13:8004/indicocr/ocr_markdown")
 REQUEST_TIMEOUT = 600  # seconds; a long scanned PDF can take minutes
+INDIC_REQUEST_TIMEOUT = 3600  # seconds; IndicOCR needs ~30-45 s per page and may wait in the server queue
+INDIC_CHUNK_PAGES = int(os.getenv("INDIC_OCR_CHUNK_PAGES", "2"))  # pages per request for a PDF (0 = whole file in one request)
+INDIC_PARALLEL = int(os.getenv("INDIC_OCR_PARALLEL", "1"))  # chunks sent at the same time (server has several workers; try 3)
 POLL_INTERVAL = 10  # seconds between checks on a queued job
 RETRY_WAITS = (10, 30, 60)  # seconds to wait before each retry when the server is down or busy
 
 
-def _post(file_path: Path, url: str = OCR_API_URL) -> requests.Response:
+def _post(file_path: Path, url: str = OCR_API_URL, params: dict | None = None, timeout: int = REQUEST_TIMEOUT) -> requests.Response:
     for wait in (*RETRY_WAITS, None):
         timed_out = False
         try:
             with open(file_path, "rb") as handle:
-                response = requests.post(url, files={"file": (file_path.name, handle)}, timeout=REQUEST_TIMEOUT)
+                response = requests.post(url, files={"file": (file_path.name, handle)}, params=params, timeout=(30, timeout))
             if response.status_code < 500:
                 return response
             error = f"HTTP {response.status_code}: {response.text[:100]}"
@@ -94,11 +99,35 @@ def clean_markdown(markdown: str) -> str:
     return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
 
 
-def ocr_file_indic(file_path: Path) -> str:
-    response = _post(file_path, INDIC_OCR_API_URL)
+def _indic_request(file_path: Path, page_range: str | None) -> list:
+    """One IndicOCR call (whole file, or only ?pages=<range>) -> list of {"page_number", "markdown"}."""
+    params = {"pages": page_range} if page_range else None
+    response = _post(file_path, INDIC_OCR_API_URL, params=params, timeout=INDIC_REQUEST_TIMEOUT)
     if response.status_code != 200:
         raise RuntimeError(f"IndicOCR server rejected {file_path.name}: HTTP {response.status_code} {response.text[:200]}")
-    pages = response.json()["pages"]
+    return response.json()["pages"]
+
+
+def _indic_pages(file_path: Path) -> list:
+    """Long PDFs go in small page ranges: each request stays short, a failed range is retried on its
+    own (not the whole file from page 1), and ranges can run in parallel on the server's workers."""
+    total = None
+    if file_path.suffix.lower() == ".pdf" and INDIC_CHUNK_PAGES > 0:
+        try:
+            total = len(PdfReader(str(file_path)).pages)
+        except Exception:
+            total = None  # unreadable here -> let the server decide, whole file in one request
+    if not total or total <= INDIC_CHUNK_PAGES:
+        return _indic_request(file_path, None)
+
+    ranges = [f"{start}-{min(start + INDIC_CHUNK_PAGES - 1, total)}" for start in range(1, total + 1, INDIC_CHUNK_PAGES)]
+    with ThreadPoolExecutor(max_workers=max(1, INDIC_PARALLEL)) as pool:
+        chunks = list(pool.map(lambda r: _indic_request(file_path, r), ranges))
+    return [page for chunk in chunks for page in chunk]
+
+
+def ocr_file_indic(file_path: Path) -> str:
+    pages = _indic_pages(file_path)
     texts = []
     for page in pages:
         text = clean_markdown(page["markdown"])

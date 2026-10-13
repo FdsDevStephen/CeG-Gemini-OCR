@@ -47,7 +47,7 @@ SOURCES = {"indicapi": f"{SOURCE}_Mandar", "api": f"{SOURCE}_Ujwal"}
 OCR_WORKERS = {"api": 1, "indicapi": 1, "indic": 1, "gemini": 3}  # grievances OCR'd at the same time (indicapi / api: one by one, ATR then Citizen)
 OCR_AHEAD = 6     # at most this many OCR'd grievances wait for Gemma
 FAILED_FILE = "OCR failed.txt"  # in TEXT_DIRS[engine]; these grievances are skipped unless --retry-failed
-SAVE_EVERY = 1    # write the Excel file after every observation, so a stopped run resumes where it stopped
+SAVE_EVERY = 5    # write the Excel file after every 5 observations (and at the end); a stopped run redoes at most 4
 
 
 def done_ids(workbook: Path) -> set[str]:
@@ -108,7 +108,7 @@ def main():
     if not source.is_dir():
         raise SystemExit(f"Folder not found: {source}")
     print(f"Folder: {source}")
-    workbook, source = MERGED_WORKBOOK, SOURCES.get(args.ocr, SOURCE)
+    workbook, source_name = MERGED_WORKBOOK, SOURCES.get(args.ocr, SOURCE)
     done = done_ids(workbook)
     skipped = set() if args.retry_failed else failed_ids(args.ocr)
     todo = [p for p in find_cases(source) if p.name not in done | skipped]
@@ -122,7 +122,7 @@ def main():
 
     def save():
         try:
-            update_workbook(pending, workbook, source)
+            update_workbook(pending, workbook, source_name)
             pending.clear()
         except PermissionError as exc:
             print(f"WARNING: {exc} (will retry)", flush=True)

@@ -4,8 +4,8 @@ Reads the documents where they are (nothing is copied), from the folder you pick
     <folder>\\<id>\\ATR\\..., Citizen\\...
 Keeps the extracted text, so a re-check never runs OCR twice:
     Atr and Citizen_Out_IndicAPI\\<id>\\ATR.txt, Citizen.txt   (each --ocr engine has its own folder)
-Writes the observations only to:
-    Observation\\Atr and Citizen Observation.xlsx
+Writes the observations only to the one Excel file:
+    Observation\\All Observations Merged.xlsx
 
 OCR (the hosted IndicOCR server, see app/ocr_api.py; --ocr api, indic or gemini for another engine) runs a few
 grievances ahead in the background while the model checks each one as soon as its
@@ -28,8 +28,8 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 from app import ocr
-from app.excel import SHEET, update_workbook
-from app.observation import MODELS, OBSERVATION_ROOTS, check_case
+from app.excel import MERGED_WORKBOOK, SHEET, update_workbook
+from app.observation import MODELS, check_case
 from pipeline import SUPPORTED, document_folders, find_cases, pick_folder
 
 
@@ -40,13 +40,10 @@ TEXT_DIRS = {
     "indic": ocr.PROJECT_ROOT / "Atr and Citizen_Out_Indic",
     "gemini": ocr.PROJECT_ROOT / "Atr and Citizen_Out",
 }
-WORKBOOK = OBSERVATION_ROOTS[0] / "Atr and Citizen Observation.xlsx"
-# Each OCR server writes its own Excel file; the others share WORKBOOK. A grievance in any
-# of these files is done and skipped, whichever engine checked it.
-WORKBOOKS = {
-    "indicapi": OBSERVATION_ROOTS[0] / "Atr and Citizen Observation_Mandar.xlsx",
-    "api": OBSERVATION_ROOTS[0] / "Atr and Citizen Observation_Ujwal.xlsx",
-}
+# Every engine writes to MERGED_WORKBOOK; the Source column says which one checked a grievance
+# (the names of the Excel files each engine used to have). A grievance already there is skipped.
+SOURCE = "Atr and Citizen Observation"
+SOURCES = {"indicapi": f"{SOURCE}_Mandar", "api": f"{SOURCE}_Ujwal"}
 OCR_WORKERS = {"api": 1, "indicapi": 1, "indic": 1, "gemini": 3}  # grievances OCR'd at the same time (indicapi / api: one by one, ATR then Citizen)
 OCR_AHEAD = 6     # at most this many OCR'd grievances wait for Gemma
 FAILED_FILE = "OCR failed.txt"  # in TEXT_DIRS[engine]; these grievances are skipped unless --retry-failed
@@ -111,11 +108,11 @@ def main():
     if not source.is_dir():
         raise SystemExit(f"Folder not found: {source}")
     print(f"Folder: {source}")
-    workbook = WORKBOOKS.get(args.ocr, WORKBOOK)
-    done = set().union(*(done_ids(path) for path in (WORKBOOK, *WORKBOOKS.values())))
+    workbook, source = MERGED_WORKBOOK, SOURCES.get(args.ocr, SOURCE)
+    done = done_ids(workbook)
     skipped = set() if args.retry_failed else failed_ids(args.ocr)
     todo = [p for p in find_cases(source) if p.name not in done | skipped]
-    print(f"{len(done)} grievance(s) already done (in any Observation Excel), {len(todo)} to go")
+    print(f"{len(done)} grievance(s) already done (in {workbook.name}), {len(todo)} to go")
     if skipped:
         print(f"Skipping {len(skipped)} grievance(s) whose OCR failed before (see {FAILED_FILE}; --retry-failed to retry)")
     todo = todo[: args.limit] if args.limit else todo
@@ -125,7 +122,7 @@ def main():
 
     def save():
         try:
-            update_workbook(pending, workbook)
+            update_workbook(pending, workbook, source)
             pending.clear()
         except PermissionError as exc:
             print(f"WARNING: {exc} (will retry)", flush=True)

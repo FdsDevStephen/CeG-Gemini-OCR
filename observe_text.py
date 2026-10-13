@@ -5,8 +5,8 @@ Reads one folder of text files, one .txt per document:
 Several files on one side are joined, each headed by its file name (as app.ocr does).
 Only grievances with text on both sides are checked; the others are listed at the start.
 
-Writes the observations to:
-    Observation\\<folder name> Observation.xlsx   (saved after every grievance)
+Writes the observations to the one Excel file (Source column: "<folder name> Observation"):
+    Observation\\All Observations Merged.xlsx   (saved after every grievance)
 Grievances already in that Excel are skipped, so running it again continues where it stopped.
 
 Usage:
@@ -20,8 +20,8 @@ import sys
 import time
 from pathlib import Path
 
-from app.excel import update_workbook
-from app.observation import MODELS, OBSERVATION_ROOTS, check_case
+from app.excel import MERGED_WORKBOOK, update_workbook
+from app.observation import MODELS, check_case
 from run_folder import done_ids
 
 DEFAULT_SOURCE = Path(__file__).resolve().parent / "ipgrs_ouput"
@@ -50,7 +50,7 @@ def main():
 
     if not args.source.is_dir():
         raise SystemExit(f"Folder not found: {args.source}")
-    workbook = OBSERVATION_ROOTS[0] / f"{args.source.name} Observation.xlsx"
+    workbook, source = MERGED_WORKBOOK, f"{args.source.name} Observation"
     done = done_ids(workbook)
 
     cases, incomplete = [], {}
@@ -74,7 +74,7 @@ def main():
             observation = check_case(case_id, side_text(case_dir, "Citizen"), side_text(case_dir, "ATR"), args.model)
             while True:
                 try:
-                    update_workbook([observation], workbook)
+                    update_workbook([observation], workbook, source)
                     break
                 except PermissionError as exc:
                     print(f"WARNING: {exc} (retrying in 30s)", flush=True)

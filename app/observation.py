@@ -10,9 +10,8 @@ Asks one of two models, chosen with --model:
 
 and writes the observation to a folder per model, in both Observation/ and
 Folder and Txt/Observation/:
-    Gemini/<grievance_id>Observation.json and a row in Gemini/Observations_Gemini.xlsx
-    Gemma/<grievance_id>Observation.json  and a row in Gemma/Observations_Gemma.xlsx
-with a copy of each workbook directly in Observation/ (not in Folder and Txt/Observation/).
+    Gemini/<grievance_id>Observation.json, Gemma/<grievance_id>Observation.json, ...
+with a row in the one Excel file, Observation/All Observations Merged.xlsx.
 
 Usage:
     python -m app.observation
@@ -33,7 +32,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from app.excel import sync_observation_dir, update_workbook, workbook_path
+from app.excel import MERGED_WORKBOOK, sync_observation_dir, update_workbook
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -879,35 +878,25 @@ def check_case(case_id: str, citizen_text: str, atr_text: str, model: str = "gem
 
 
 def observation_dirs(model: str) -> tuple[Path, ...]:
-    """Each model keeps its own JSON files and workbook, e.g. Observation/Gemma."""
+    """Each model keeps its own JSON files, e.g. Observation/Gemma."""
     return tuple(root / model.capitalize() for root in OBSERVATION_ROOTS)
 
 
-def workbook_paths(folder: Path) -> list[Path]:
-    """The model folder's workbook; the main Observation/ also keeps a copy next to the model folders."""
-    paths = [workbook_path(folder)]
-    if folder.parent == OBSERVATION_ROOTS[0]:
-        paths.append(folder.parent / paths[0].name)
-    return paths
-
-
 def save_observation(observation: dict, model: str) -> str:
-    """Write <id>Observation.json and the Excel row in the model's observation folders; returns a status note."""
-    notes = []
+    """Write <id>Observation.json in the model's observation folders and its row in the Excel file."""
     for folder in observation_dirs(model):
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / f"{observation['case_id']}Observation.json"
         path.write_text(json.dumps(observation, ensure_ascii=False, indent=2), encoding="utf-8")
-        for workbook in workbook_paths(folder):
-            try:
-                update_workbook([observation], workbook)
-            except PermissionError as exc:
-                notes.append(str(exc))
-    return "; ".join(notes) or "added to Excel"
+    try:
+        update_workbook([observation], MERGED_WORKBOOK, source=model.capitalize())
+    except PermissionError as exc:
+        return str(exc)
+    return "added to Excel"
 
 
 def finish_run(model: str):
-    """Write observations.json and re-sync the workbooks after a run."""
+    """Write observations.json and add any rows missing from the Excel file after a run."""
     folders = observation_dirs(model)
     observations = [
         json.loads(path.read_text(encoding="utf-8"))
@@ -920,11 +909,10 @@ def finish_run(model: str):
     print(f"\nResolved: {resolved}, not resolved: {len(observations) - resolved}")
 
     # Catch-up: adds rows that could not be written earlier (e.g. the workbook was open in Excel).
-    for folder in folders:
-        try:
-            sync_observation_dir(folder, workbook_paths(folder))
-        except PermissionError as exc:
-            print(f"WARNING: {exc}")
+    try:
+        sync_observation_dir(folders[0], MERGED_WORKBOOK, source=model.capitalize())
+    except PermissionError as exc:
+        print(f"WARNING: {exc}")
 
 
 def main():

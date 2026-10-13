@@ -6,12 +6,13 @@ Several files on one side are joined, each headed by its file name (as app.ocr d
 Only grievances with text on both sides are checked; the others are listed at the start.
 
 Writes the observations to the one Excel file (Source column: "<folder name> Observation"):
-    Observation\\All Observations Merged.xlsx   (saved after every grievance)
+    Observation\\All Observations Merged.xlsx   (saved every --batch grievances, and at the end)
 Grievances already in that Excel are skipped, so running it again continues where it stopped.
 
 Usage:
     python observe_text.py                          # ipgrs_ouput, Qwen3 14B greedy server
     python observe_text.py --source "D:\\some\\text folder" --limit 10
+    python observe_text.py --batch 50               # save to Excel every 50 grievances (default 25)
     python observe_text.py --model gemini
 """
 
@@ -38,11 +39,27 @@ def side_text(case_dir: Path, side: str) -> str:
     return "\n\n".join(f"===== {f.stem} =====\n\n{t}" for f, t in texts)
 
 
+def save(observations: list, workbook: Path, source: str):
+    """Write the pending observations, waiting while the Excel is open elsewhere."""
+    if not observations:
+        return
+    while True:
+        try:
+            update_workbook(observations, workbook, source)
+            break
+        except PermissionError as exc:
+            print(f"WARNING: {exc} (retrying in 30s)", flush=True)
+            time.sleep(30)
+    print(f"Saved {len(observations)} to {workbook.name}", flush=True)
+    observations.clear()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Check grievances from already extracted text.")
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE, help=f"Text folder (default: {DEFAULT_SOURCE.name}).")
     parser.add_argument("--limit", type=int, help="Only this many grievances on this run.")
     parser.add_argument("--model", choices=MODELS, default="qwen14b", help="qwen14b (default, Qwen3 14B greedy server), qwen3, gemma or gemini.")
+    parser.add_argument("--batch", type=int, default=25, help="Save to Excel every this many grievances (default 25).")
     args = parser.parse_args()
 
     for stream in (sys.stdout, sys.stderr):
@@ -66,24 +83,23 @@ def main():
     cases = cases[: args.limit] if args.limit else cases
     print(f"This run: {len(cases)} grievance(s) with {MODELS[args.model]}", flush=True)
 
-    failed, started = [], time.time()
-    for index, case_dir in enumerate(cases, start=1):
-        case_id = case_dir.name
-        check_started = time.time()
-        try:
-            observation = check_case(case_id, side_text(case_dir, "Citizen"), side_text(case_dir, "ATR"), args.model)
-            while True:
-                try:
-                    update_workbook([observation], workbook, source)
-                    break
-                except PermissionError as exc:
-                    print(f"WARNING: {exc} (retrying in 30s)", flush=True)
-                    time.sleep(30)
-            print(f"[{index}/{len(cases)}] {case_id}: {'★' * observation['rating']} "
-                  f"({time.time() - check_started:.0f}s)", flush=True)
-        except Exception as exc:
-            failed.append(case_id)
-            print(f"[{index}/{len(cases)}] {case_id}: FAILED: {exc}", flush=True)
+    failed, pending, started = [], [], time.time()
+    try:
+        for index, case_dir in enumerate(cases, start=1):
+            case_id = case_dir.name
+            check_started = time.time()
+            try:
+                observation = check_case(case_id, side_text(case_dir, "Citizen"), side_text(case_dir, "ATR"), args.model)
+                pending.append(observation)
+                print(f"[{index}/{len(cases)}] {case_id}: {'★' * observation['rating']} "
+                      f"({time.time() - check_started:.0f}s)", flush=True)
+            except Exception as exc:
+                failed.append(case_id)
+                print(f"[{index}/{len(cases)}] {case_id}: FAILED: {exc}", flush=True)
+            if len(pending) >= args.batch:
+                save(pending, workbook, source)
+    finally:
+        save(pending, workbook, source)
 
     print(f"\nDone in {(time.time() - started) / 60:.0f} min. Failed: {', '.join(failed) or 'none'}")
     print(f"Excel: {workbook}")

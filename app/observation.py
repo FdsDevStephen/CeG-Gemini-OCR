@@ -55,8 +55,11 @@ QWEN3_OLLAMA_URL = os.getenv("QWEN3_OLLAMA_URL", OLLAMA_URL).rstrip("/")  # or a
 GEMMA_E4B_URL = "http://101.53.137.13:8004/gemma/generate"
 # generate_greedy: temperature 0 and no thinking, so the same text always gets the same
 # verdict, in ~10 s instead of minutes.
-QWEN14B_URL = "http://101.53.137.13:8004/qwen13/generate_greedy"
+QWEN14B_URL = "http://101.53.137.13:8004/vllm/generate_greedy"
 QWEN_ATTEMPTS = 3
+# The Qwen server reads at most 32768 tokens, 4096 of them kept for the reply. A Kannada
+# letter costs about 2 tokens, other characters about 1 in 3; longer scans are cut to fit.
+QWEN_PROMPT_TOKENS = 26000
 
 # verdict -> (plain meaning, is_resolved, star rating of the service). Kept in code
 # so every verdict always maps to the same answers, whatever the model writes.
@@ -443,7 +446,42 @@ def applicant_entry(case_id: str, citizen_text: str, atr_text: str) -> str | Non
     return None
 
 
-def build_user_prompt(case_id: str, citizen_text: str, atr_text: str) -> str:
+class PromptTooLong(RuntimeError):
+    pass
+
+
+def estimate_tokens(text: str) -> int:
+    kannada = len(KANNADA_RE.findall(text))
+    return int(kannada * 2 + (len(text) - kannada) * 0.35)
+
+
+def shorten(text: str, tokens: int) -> str:
+    """The start and the end of a text too long for the model (the request and the outcome
+    are usually there), with a note where the middle was left out."""
+    if estimate_tokens(text) <= tokens:
+        return text
+    keep = max(0, int(len(text) * tokens / estimate_tokens(text)))
+    head = keep * 2 // 3
+    return (
+        f"{text[:head]}\n\n[... {len(text) - keep} characters left out: the document is too long ...]\n\n"
+        f"{text[len(text) - (keep - head):]}"
+    )
+
+
+def fit_texts(citizen_text: str, atr_text: str, tokens: int) -> tuple[str, str]:
+    """Cut the longer document first: a short ATR is never cut to make room for a long letter."""
+    citizen, atr = estimate_tokens(citizen_text), estimate_tokens(atr_text)
+    if citizen + atr <= tokens:
+        return citizen_text, atr_text
+    if atr <= tokens // 2:
+        return shorten(citizen_text, tokens - atr), atr_text
+    if citizen <= tokens // 2:
+        return citizen_text, shorten(atr_text, tokens - citizen)
+    return shorten(citizen_text, tokens // 2), shorten(atr_text, tokens // 2)
+
+
+def build_user_prompt(case_id: str, citizen_text: str, atr_text: str, max_tokens: int | None = None) -> str:
+    """max_tokens: cut the documents so the whole prompt fits (the checks still read them in full)."""
     ticked = ticked_items(citizen_text)
     notes = [
         "Ticked on the citizen's form: " + "; ".join(ticked)
@@ -466,6 +504,8 @@ def build_user_prompt(case_id: str, citizen_text: str, atr_text: str) -> str:
             f"This case is grievance {case_id}, but the ATR cites grievance number(s) "
             f"{', '.join(others)}: it is probably a reply to a different grievance."
         )
+    if max_tokens:
+        citizen_text, atr_text = fit_texts(citizen_text, atr_text, max_tokens - estimate_tokens("\n".join(notes)) - 200)
     return (
         "=== CITIZEN DOCUMENT ===\n"
         f"{citizen_text.strip()}\n\n"
@@ -548,10 +588,17 @@ def qwen_chat(system: str, user: str, schema: dict, num_ctx: int) -> dict:
             with urllib.request.urlopen(request, timeout=900) as response:
                 text = json.loads(response.read().decode("utf-8"))["text"]
             return parse_qwen_reply(text, schema)
+        except urllib.error.HTTPError as exc:
+            # A prompt over the context fails the same way every time: no point retrying it.
+            body = exc.read().decode("utf-8", "replace")
+            if "maximum context length" in body:
+                raise PromptTooLong(f"Prompt too long for the Qwen server: {body[:300]}") from exc
+            error = exc
         except (urllib.error.URLError, ConnectionError, TimeoutError, ValueError, RuntimeError) as exc:
-            if attempt == QWEN_ATTEMPTS:
-                raise RuntimeError(f"Qwen server at {QWEN14B_URL} failed {attempt} times ({exc})") from exc
-            time.sleep(15 * attempt)
+            error = exc
+        if attempt == QWEN_ATTEMPTS:
+            raise RuntimeError(f"Qwen server at {QWEN14B_URL} failed {attempt} times ({error})") from error
+        time.sleep(15 * attempt)
 
 
 def parse_qwen_reply(text: str, schema: dict) -> dict:
@@ -664,6 +711,19 @@ def ask_gemma_scheme(result: dict, ticked: list[str], chat=ollama_chat) -> dict:
         "required": ["scheme", "scheme_english"],
     }
     return chat(SCHEME_PROMPT, user, schema, num_ctx=4096)
+
+
+def ask_qwen14b(case_id: str, citizen_text: str, atr_text: str) -> dict:
+    """ask_gemma on the Qwen server, the documents cut to fit its context; if the estimate
+    was still too high for this text, again with half as much."""
+    tokens = QWEN_PROMPT_TOKENS - estimate_tokens(SYSTEM_PROMPT)
+    while True:
+        try:
+            return ask_gemma(build_user_prompt(case_id, citizen_text, atr_text, tokens), ticked_items(citizen_text), qwen_chat)
+        except PromptTooLong:
+            if tokens < 4000:
+                raise
+            tokens //= 2
 
 
 def ask_gemma(user_prompt: str, ticked: list[str], chat=ollama_chat) -> dict:
@@ -867,7 +927,7 @@ def check_case(case_id: str, citizen_text: str, atr_text: str, model: str = "gem
     elif model == "qwen3":
         result = ask_gemma(user_prompt, ticked_items(citizen_text), qwen3_chat)
     elif model == "qwen14b":
-        result = ask_gemma(user_prompt, ticked_items(citizen_text), qwen_chat)
+        result = ask_qwen14b(case_id, citizen_text, atr_text)
     elif model == "gemma-e4b":
         result = ask_gemma_e4b(case_id, citizen_text, atr_text)
     else:

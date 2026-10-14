@@ -1,0 +1,37 @@
+# Test requests: start the API (F5), then click "Send request" above a request.
+# Or use the test page https://localhost:7317/ (folder picker) or Swagger https://localhost:7317/swagger.
+# OCR takes ~30-45 s per page, so the uploads can take a few minutes.
+
+@host = https://localhost:7317
+
+### Is it working? (API, OCR server and LLM server)
+GET {{host}}/health
+
+### Upload a grievance folder -> the observation
+# Every file is sent as "files", named with its path inside the folder: <id>/ATR/..., <id>/Citizen/...
+# The case ID is taken from the folder name. Change the paths after "<" to the real documents.
+POST {{host}}/api/grievances/check
+Content-Type: multipart/form-data; boundary=GrievanceBoundary
+
+--GrievanceBoundary
+Content-Disposition: form-data; name="files"; filename="448579/ATR/ATR.pdf"
+Content-Type: application/pdf
+
+< C:\path\to\448579\ATR\ATR.pdf
+--GrievanceBoundary
+Content-Disposition: form-data; name="files"; filename="448579/Citizen/Citizen.pdf"
+Content-Type: application/pdf
+
+< C:\path\to\448579\Citizen\Citizen.pdf
+--GrievanceBoundary--
+
+### Upload a single file -> its OCR text only
+POST {{host}}/api/grievances/check
+Content-Type: multipart/form-data; boundary=GrievanceBoundary
+
+--GrievanceBoundary
+Content-Disposition: form-data; name="files"; filename="document.pdf"
+Content-Type: application/pdf
+
+< C:\path\to\document.pdf
+--GrievanceBoundary--

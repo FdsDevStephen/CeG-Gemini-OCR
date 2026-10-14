@@ -3,11 +3,11 @@
 Reads the documents where they are (nothing is copied), from the folder you pick:
     <folder>\\<id>\\ATR\\..., Citizen\\...
 Keeps the extracted text, so a re-check never runs OCR twice:
-    Atr and Citizen_Out_IndicAPI\\<id>\\ATR.txt, Citizen.txt   (each --ocr engine has its own folder)
+    Atr and Citizen_Out_API\\<id>\\ATR.txt, Citizen.txt   (each --ocr engine has its own folder)
 Writes the observations only to the one Excel file:
     Observation\\All Observations Merged.xlsx
 
-OCR (the hosted IndicOCR server, see app/ocr_api.py; --ocr api, indic or gemini for another engine) runs a few
+OCR (the hosted OCR server, see app/ocr_api.py; --ocr indicapi, indic or gemini for another engine) runs a few
 grievances ahead in the background while the model checks each one as soon as its
 text is ready. Grievances already in the Excel file are
 skipped, so running it again continues where the last run stopped.
@@ -16,7 +16,7 @@ Usage:
     python run_folder.py                 # pick a folder; every grievance not yet in the Excel
     python run_folder.py --limit 100     # only the next 100
     python run_folder.py --source "D:\\PGRS\\PrajaSevaDocuments\\Atr and Citizen 2"   # no picker
-    python run_folder.py --ocr gemini    # Gemini OCR instead of the IndicOCR server
+    python run_folder.py --ocr gemini    # Gemini OCR instead of the OCR server
 """
 
 import argparse
@@ -47,6 +47,7 @@ SOURCES = {"indicapi": f"{SOURCE}_Mandar", "api": f"{SOURCE}_Ujwal"}
 OCR_WORKERS = {"api": 1, "indicapi": 1, "indic": 1, "gemini": 3}  # grievances OCR'd at the same time (indicapi / api: one by one, ATR then Citizen)
 OCR_AHEAD = 6     # at most this many OCR'd grievances wait for Gemma
 FAILED_FILE = "OCR failed.txt"  # in TEXT_DIRS[engine]; these grievances are skipped unless --retry-failed
+CHECK_FAILED_FILE = "Observation failed.txt"  # in TEXT_DIRS[engine]; only a record, these are retried on every run
 SAVE_EVERY = 5    # write the Excel file after every 5 observations (and at the end); a stopped run redoes at most 4
 
 
@@ -65,10 +66,10 @@ def failed_ids(engine: str) -> set[str]:
     return {line.split("\t", 1)[0] for line in path.read_text(encoding="utf-8").splitlines() if line.strip()}
 
 
-def note_failed(engine: str, case_id: str, error: Exception) -> None:
+def note_failed(engine: str, case_id: str, error: Exception, file_name: str = FAILED_FILE) -> None:
     TEXT_DIRS[engine].mkdir(parents=True, exist_ok=True)
     reason = (str(error).splitlines() or [type(error).__name__])[0]
-    with open(TEXT_DIRS[engine] / FAILED_FILE, "a", encoding="utf-8") as handle:
+    with open(TEXT_DIRS[engine] / file_name, "a", encoding="utf-8") as handle:
         handle.write(f"{case_id}\t{reason}\n")
 
 
@@ -93,7 +94,7 @@ def ocr_grievance(case_dir: Path, engine: str, log) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="OCR and check every grievance in a folder.")
     parser.add_argument("--source", type=Path, help="Folder of grievances. Omit to pick one in a folder picker.")
-    parser.add_argument("--ocr", choices=ocr.OCR_ENGINES, default="indicapi", help="indicapi (default, hosted IndicOCR server), api (the other OCR server), indic (local Indic-OCR) or gemini.")
+    parser.add_argument("--ocr", choices=ocr.OCR_ENGINES, default="api", help="api (default, the OCR server at OCR_API_URL), indicapi (hosted IndicOCR server), indic (local Indic-OCR) or gemini.")
     parser.add_argument("--limit", type=int, help="Only this many grievances on this run.")
     parser.add_argument("--retry-failed", action="store_true", help="Also retry grievances whose OCR failed before.")
     parser.add_argument("--model", choices=MODELS, default="qwen14b", help="qwen14b (default, Qwen3 14B greedy server), qwen3 (Ollama), gemma or gemini.")
@@ -158,7 +159,8 @@ def main():
                         log(f"{'★' * observation['rating']} ({time.time() - check_started:.0f}s)")
                     except Exception as exc:
                         failed.append(case_id)
-                        log(f"FAILED: {exc}")
+                        note_failed(args.ocr, case_id, exc, CHECK_FAILED_FILE)
+                        log(f"FAILED (see {CHECK_FAILED_FILE}): {exc}")
                 finished += 1
                 elapsed = time.time() - started
                 print(

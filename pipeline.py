@@ -6,7 +6,7 @@ The folder can be one grievance or a folder of grievances:
 
 For each grievance:
     1. copies the files to PGRS/<id>/ and Folder and Txt/PGRS/<id>/
-    2. OCR (the hosted IndicOCR server; --ocr api, indic or gemini for another engine) -> PGRS_Output/<id>/ATR.txt, Citizen.txt
+    2. OCR (the hosted OCR server; --ocr indicapi, indic or gemini for another engine) -> PGRS_Output/<id>/ATR.txt, Citizen.txt
     3. observation (Gemma) -> Observation/<Model>/<id>Observation.json, Observations_<Model>.xlsx
 
 Already extracted text and existing observations are reused unless --force is given.
@@ -72,7 +72,7 @@ def copy_documents(case_id: str, subfolder: str, source: Path) -> list[Path]:
     return [ocr.INPUT_DIR / case_id / subfolder / file.name for file in files]
 
 
-def ocr_case(case_dir: Path, force: bool, engine: str = "indicapi", log=print) -> tuple[dict | None, bool]:
+def ocr_case(case_dir: Path, force: bool, engine: str = "api", log=print) -> tuple[dict | None, bool]:
     """Copy and OCR one grievance. Returns ({"ATR": text, "Citizen": text} or None, whether OCR ran)."""
     case_id, ocr_ran = case_dir.name, False
     folders = document_folders(case_dir)
@@ -114,7 +114,7 @@ def observe_case(case_id: str, texts: dict, model: str, redo: bool, log=print):
     log(f"    observation: {status} ({time.time() - started:.0f}s), {note}")
 
 
-def run_case(case_dir: Path, model: str, force: bool, engine: str = "indicapi") -> float:
+def run_case(case_dir: Path, model: str, force: bool, engine: str = "api") -> float:
     """OCR and check one grievance; returns the OCR cost in USD."""
     calls_before = len(ocr.usage_log)
     texts, ocr_ran = ocr_case(case_dir, force, engine)
@@ -127,7 +127,7 @@ def main():
     parser = argparse.ArgumentParser(description="Pick a folder, OCR it, then find the observation.")
     parser.add_argument("folder", nargs="?", help="Grievance folder, or a folder of grievances. Omit to pick one.")
     parser.add_argument("--model", choices=MODELS, default="qwen3", help="qwen3 (default, Qwen3 14B on Ollama), qwen14b, gemma or gemini.")
-    parser.add_argument("--ocr", choices=ocr.OCR_ENGINES, default="indicapi", help="indicapi (default, hosted IndicOCR server), api (the other OCR server), indic (local Indic-OCR) or gemini.")
+    parser.add_argument("--ocr", choices=ocr.OCR_ENGINES, default="api", help="api (default, the OCR server at OCR_API_URL), indicapi (hosted IndicOCR server), indic (local Indic-OCR) or gemini.")
     parser.add_argument("--force", action="store_true", help="Redo OCR and the observation.")
     args = parser.parse_args()
 

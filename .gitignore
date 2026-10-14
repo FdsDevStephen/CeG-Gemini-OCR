@@ -22,3 +22,12 @@ ipgrs_ouput/
 Atr and Citizen_Out_API/
 Atr and Citizen_Out_IndicAPI/
 PGRS30_Qwen3_14B_v2.xlsx
+api_output/
+smarana/
+smarana_Out/
+
+# .NET build output and Visual Studio's own files (GrievanceApi)
+bin/
+obj/
+.vs/
+*.user

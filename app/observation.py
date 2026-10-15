@@ -307,7 +307,12 @@ Fill in, in English unless a field says otherwise:
   Always write this field in Kannada script.
 - scheme_english: the English name of that scheme, e.g. "Sandhya Suraksha Pension Scheme
   (old-age pension)".
-- case_summary: one or two sentences on what the citizen asked for.
+- case_summary: one or two sentences on what THIS citizen asked for, about the one scheme
+  named in the scheme field: the specific request and its reason, e.g. "The citizen's
+  Sandhya Suraksha pension stopped after an income check; he asks for it to be restarted."
+  Write about that one scheme ONLY. The form prints many schemes and services (pensions,
+  housing, ration card, road, drinking water, ...): never list them, never write "various
+  schemes", and never add "also requested / also mentioned ..." for any other item.
 - atr_key_sentence: copy, word for word in the original language, the ATR sentence that
   states the outcome.
 - atr_key_sentence_english: a faithful English translation of that sentence.

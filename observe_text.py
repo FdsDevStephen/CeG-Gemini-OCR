@@ -10,10 +10,10 @@ Writes the observations to the one Excel file (Source column: "<folder name> Obs
 Grievances already in that Excel are skipped, so running it again continues where it stopped.
 
 Usage:
-    python observe_text.py                          # ipgrs_ouput, Qwen3 14B greedy server
+    python observe_text.py                          # pick the text folder, Qwen3 14B greedy server
     python observe_text.py --source "D:\\some\\text folder" --limit 10
     python observe_text.py --batch 50               # save to Excel every 50 grievances (default 25)
-    python observe_text.py --model gemini
+    python observe_text.py --source ipgrs_ouput --model gemini
 """
 
 import argparse
@@ -23,9 +23,9 @@ from pathlib import Path
 
 from app.excel import MERGED_WORKBOOK, update_workbook
 from app.observation import MODELS, check_case
+from pipeline import pick_folder
 from run_folder import done_ids
 
-DEFAULT_SOURCE = Path(__file__).resolve().parent / "ipgrs_ouput"
 SIDES = ("ATR", "Citizen")
 
 
@@ -56,7 +56,7 @@ def save(observations: list, workbook: Path, source: str):
 
 def main():
     parser = argparse.ArgumentParser(description="Check grievances from already extracted text.")
-    parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE, help=f"Text folder (default: {DEFAULT_SOURCE.name}).")
+    parser.add_argument("--source", type=Path, help="Text folder, e.g. ipgrs_ouput or api_output. Omit to pick one.")
     parser.add_argument("--limit", type=int, help="Only this many grievances on this run.")
     parser.add_argument("--model", choices=MODELS, default="qwen14b", help="qwen14b (default, Qwen3 14B greedy server), qwen3, gemma or gemini.")
     parser.add_argument("--batch", type=int, default=25, help="Save to Excel every this many grievances (default 25).")
@@ -65,6 +65,9 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         stream.reconfigure(encoding="utf-8", errors="replace")
 
+    args.source = args.source or pick_folder("Select a text folder (e.g. ipgrs_ouput or api_output)")
+    if args.source is None:
+        raise SystemExit("No folder selected.")
     if not args.source.is_dir():
         raise SystemExit(f"Folder not found: {args.source}")
     workbook, source = MERGED_WORKBOOK, f"{args.source.name} Observation"

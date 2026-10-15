@@ -31,14 +31,14 @@ from app.observation import MODELS, check_case, finish_run, observation_dirs, sa
 SUPPORTED = ocr.PDF_EXTENSIONS | ocr.IMAGE_EXTENSIONS
 
 
-def pick_folder() -> Path | None:
+def pick_folder(title: str = "Select a grievance folder (or a folder of grievances)") -> Path | None:
     import tkinter
     from tkinter import filedialog
 
     root = tkinter.Tk()
     root.withdraw()
     root.attributes("-topmost", True)
-    chosen = filedialog.askdirectory(title="Select a grievance folder (or a folder of grievances)")
+    chosen = filedialog.askdirectory(title=title)
     root.destroy()
     return Path(chosen) if chosen else None
 

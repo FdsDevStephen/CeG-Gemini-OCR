@@ -7,7 +7,8 @@ Writes one text file per document, all into one folder laid out like ipgrs_ouput
 so the LLM step reads it on its own:
     python observe_text.py --source api_output
 
-Text already there is kept, so running it again continues where the last run stopped.
+Text already there is kept, and grievances already in the Excel file are skipped, so running
+it again continues where the last run stopped.
 A grievance with a document the server cannot read goes in "OCR failed.txt" (in the output
 folder) and is skipped on later runs (--retry-failed to retry). If the server itself is down,
 the run stops instead, without marking anything as failed: start it again when it is back.
@@ -28,7 +29,9 @@ from pathlib import Path
 import requests
 
 from app import ocr, ocr_api
+from app.excel import MERGED_WORKBOOK
 from pipeline import SUPPORTED, document_folders, find_cases, pick_folder
+from run_folder import done_ids
 
 DEFAULT_OUT = ocr.PROJECT_ROOT / "api_output"
 FAILED_FILE = "OCR failed.txt"  # in the output folder: "<id>\t<error>" per line
@@ -98,7 +101,7 @@ def main():
         raise SystemExit(f"The OCR server at {ocr_api.OCR_API_URL} is not answering; try again later.")
 
     out = args.out
-    skipped = set() if args.retry_failed else failed_ids(out)
+    skipped = (set() if args.retry_failed else failed_ids(out)) | done_ids(MERGED_WORKBOOK)
     cases = [case_dir for source in sources for case_dir in find_cases(source)]
     todo = [
         p for p in cases
@@ -108,7 +111,7 @@ def main():
         print(f"Folder: {source}")
     print(f"{len(cases)} grievance(s), {len(cases) - len(todo)} already done or skipped, {len(todo)} to go")
     if skipped:
-        print(f"Skipping {len(skipped)} grievance(s) whose OCR failed before (see {FAILED_FILE}; --retry-failed to retry)")
+        print(f"Skipping grievances already in {MERGED_WORKBOOK.name}, and those whose OCR failed before (see {FAILED_FILE}; --retry-failed to retry)")
     todo = todo[: args.limit] if args.limit else todo
     print(f"This run: {len(todo)}, OCR server: {ocr_api.OCR_API_URL}, text in: {out}")
 

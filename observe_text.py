@@ -14,6 +14,8 @@ Usage:
     python observe_text.py --source "D:\\some\\text folder" --limit 10
     python observe_text.py --batch 50               # save to Excel every 50 grievances (default 25)
     python observe_text.py --source ipgrs_ouput --model gemini
+    python observe_text.py --source api_output --half 1   # in a 2nd terminal --half 2: even / odd case IDs,
+                                                          # so two terminals never check the same grievance
 """
 
 import argparse
@@ -39,6 +41,13 @@ def side_text(case_dir: Path, side: str) -> str:
     return "\n\n".join(f"===== {f.stem} =====\n\n{t}" for f, t in texts)
 
 
+def in_half(case_id: str, half: int) -> bool:
+    """--half 1: even case IDs, --half 2: odd ones (decided by the ID alone, so restarts never overlap)."""
+    last = case_id[-1:]
+    odd = int(last) % 2 == 1 if last.isdigit() else sum(case_id.encode()) % 2 == 1
+    return odd == (half == 2)
+
+
 def save(observations: list, workbook: Path, source: str):
     """Write the pending observations, waiting while the Excel is open elsewhere."""
     if not observations:
@@ -60,6 +69,7 @@ def main():
     parser.add_argument("--limit", type=int, help="Only this many grievances on this run.")
     parser.add_argument("--model", choices=MODELS, default="qwen14b", help="qwen14b (default, Qwen3 14B greedy server), qwen3, gemma or gemini.")
     parser.add_argument("--batch", type=int, default=25, help="Save to Excel every this many grievances (default 25).")
+    parser.add_argument("--half", type=int, choices=(1, 2), help="Only even (1) or odd (2) case IDs, to run two terminals without overlap.")
     args = parser.parse_args()
 
     for stream in (sys.stdout, sys.stderr):
@@ -78,13 +88,14 @@ def main():
         missing = [side for side in SIDES if not side_text(case_dir, side)]
         if missing:
             incomplete[case_dir.name] = missing
-        elif case_dir.name not in done:
+        elif case_dir.name not in done and (args.half is None or in_half(case_dir.name, args.half)):
             cases.append(case_dir)
     print(f"Folder: {args.source}")
     print(f"{len(done)} already in {workbook.name}; {len(incomplete)} skipped for missing ATR or Citizen text; "
           f"{len(cases)} to go")
     cases = cases[: args.limit] if args.limit else cases
-    print(f"This run: {len(cases)} grievance(s) with {MODELS[args.model]}", flush=True)
+    print(f"This run: {len(cases)} grievance(s) with {MODELS[args.model]}"
+          + (f", {'even' if args.half == 1 else 'odd'} case IDs only (--half {args.half})" if args.half else ""), flush=True)
 
     failed, pending, started = [], [], time.time()
     try:

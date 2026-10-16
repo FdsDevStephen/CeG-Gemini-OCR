@@ -28,7 +28,7 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 from app import ocr
-from app.excel import MERGED_WORKBOOK, SHEET, update_workbook
+from app.excel import MERGED_WORKBOOK, SHEET, _locked, update_workbook
 from app.observation import MODELS, check_case
 from pipeline import SUPPORTED, document_folders, find_cases, pick_folder
 
@@ -54,8 +54,10 @@ SAVE_EVERY = 5    # write the Excel file after every 5 observations (and at the 
 def done_ids(workbook: Path) -> set[str]:
     if not workbook.exists():
         return set()
-    ws = load_workbook(workbook, read_only=True)[SHEET]
-    return {str(row[0]) for row in ws.iter_rows(min_row=2, max_col=1, values_only=True) if row[0]}
+    # Under the workbook's lock: reading while another terminal saves it fails half way (EOFError).
+    with _locked(workbook):
+        ws = load_workbook(workbook, read_only=True)[SHEET]
+        return {str(row[0]) for row in ws.iter_rows(min_row=2, max_col=1, values_only=True) if row[0]}
 
 
 def failed_ids(engine: str) -> set[str]:

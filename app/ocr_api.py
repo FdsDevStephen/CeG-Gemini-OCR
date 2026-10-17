@@ -6,7 +6,7 @@ The server takes one PDF or image per request and returns its text:
 If the server instead queues the file (202 {"job_id": ...}), the text is polled from
 <server>/result/<job_id> until it is ready.
 
-Set OCR_API_URL in .env to point somewhere else (default http://101.53.140.252/ocr).
+Set OCR_API_URL in .env to point somewhere else (default http://101.53.137.65:8004/ocr).
 
 The IndicOCR server (bodhan-ai/indic-ocr) answers in JSON instead, and its text needs cleaning:
     POST <INDIC_OCR_API_URL>   multipart field "file"  ->  {"pages": [{"page_number", "markdown"}]}
@@ -29,7 +29,7 @@ from pypdf import PdfReader
 
 load_dotenv()
 
-OCR_API_URL = os.getenv("OCR_API_URL", "http://101.53.140.252/ocr")
+OCR_API_URL = os.getenv("OCR_API_URL", "http://101.53.137.65:8004/ocr")
 INDIC_OCR_API_URL = os.getenv("INDIC_OCR_API_URL", "http://101.53.137.13:8004/indicocr/ocr_markdown")
 REQUEST_TIMEOUT = 600  # seconds; a long scanned PDF can take minutes
 INDIC_REQUEST_TIMEOUT = 3600  # seconds; IndicOCR needs ~30-45 s per page and may wait in the server queue

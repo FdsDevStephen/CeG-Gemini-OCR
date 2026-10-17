@@ -97,6 +97,8 @@ def main():
     for source in sources:
         if not source.is_dir():
             raise SystemExit(f"Folder not found: {source}")
+    if not ocr_api.OCR_API_URL:
+        raise SystemExit("OCR_API_URL is not set in .env (see .env.example).")
     if not server_up():
         raise SystemExit(f"The OCR server at {ocr_api.OCR_API_URL} is not answering; try again later.")
 

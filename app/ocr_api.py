@@ -6,13 +6,14 @@ The server takes one PDF or image per request and returns its text:
 If the server instead queues the file (202 {"job_id": ...}), the text is polled from
 <server>/result/<job_id> until it is ready.
 
-Set OCR_API_URL in .env to point somewhere else (default http://101.53.137.65:8004/ocr).
+The server addresses come from .env (see .env.example): OCR_API_URL for this server,
+INDIC_OCR_API_URL for the IndicOCR one below.
 
 The IndicOCR server (bodhan-ai/indic-ocr) answers in JSON instead, and its text needs cleaning:
     POST <INDIC_OCR_API_URL>   multipart field "file"  ->  {"pages": [{"page_number", "markdown"}]}
 Its markdown has "▁" where spaces belong, HTML tables, and <img> placeholders for photos;
-clean_markdown turns that into plain text. Default INDIC_OCR_API_URL:
-http://101.53.137.13:8004/indicocr/ocr_markdown (no trailing slash: that redirects to 127.0.0.1).
+clean_markdown turns that into plain text. Write INDIC_OCR_API_URL without a trailing slash:
+with one, the server redirects to 127.0.0.1.
 """
 
 import html
@@ -29,8 +30,8 @@ from pypdf import PdfReader
 
 load_dotenv()
 
-OCR_API_URL = os.getenv("OCR_API_URL", "http://101.53.137.65:8004/ocr")
-INDIC_OCR_API_URL = os.getenv("INDIC_OCR_API_URL", "http://101.53.137.13:8004/indicocr/ocr_markdown")
+OCR_API_URL = os.getenv("OCR_API_URL")
+INDIC_OCR_API_URL = os.getenv("INDIC_OCR_API_URL")
 REQUEST_TIMEOUT = 600  # seconds; a long scanned PDF can take minutes
 INDIC_REQUEST_TIMEOUT = 3600  # seconds; IndicOCR needs ~30-45 s per page and may wait in the server queue
 INDIC_CHUNK_PAGES = int(os.getenv("INDIC_OCR_CHUNK_PAGES", "2"))  # pages per request for a PDF (0 = whole file in one request)
@@ -40,6 +41,8 @@ RETRY_WAITS = (10, 30, 60)  # seconds to wait before each retry when the server 
 
 
 def _post(file_path: Path, url: str = OCR_API_URL, params: dict | None = None, timeout: int = REQUEST_TIMEOUT) -> requests.Response:
+    if not url:
+        raise RuntimeError("The OCR server address is not set: add OCR_API_URL / INDIC_OCR_API_URL to .env (see .env.example)")
     for wait in (*RETRY_WAITS, None):
         timed_out = False
         try:

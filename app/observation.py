@@ -48,15 +48,24 @@ MODELS = {
     "qwen3": "Qwen3 14B (Ollama)",
 }
 GEMMA_MODEL = "gemma4:e2b"
-OLLAMA_URL = "http://localhost:11434"
 load_dotenv()
+# Server addresses come from .env (see .env.example), not from the code.
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434").rstrip("/")  # this PC's Ollama
 QWEN3_MODEL = os.getenv("QWEN3_MODEL", "qwen3:14b")
 QWEN3_OLLAMA_URL = os.getenv("QWEN3_OLLAMA_URL", OLLAMA_URL).rstrip("/")  # or another machine's
-GEMMA_E4B_URL = "http://101.53.137.13:8004/gemma/generate"
+GEMMA_E4B_URL = os.getenv("GEMMA_E4B_URL")
 # generate_greedy: temperature 0 and no thinking, so the same text always gets the same
 # verdict, in ~10 s instead of minutes.
-QWEN14B_URL = "http://101.53.137.13:8004/vllm/generate_greedy"
+QWEN14B_URL = os.getenv("QWEN14B_URL")
 QWEN_ATTEMPTS = 3
+
+
+def server_url(url: str | None, setting: str) -> str:
+    """The address from .env, or a clear error when the line is missing."""
+    if not url:
+        raise RuntimeError(f"{setting} is not set in .env (see .env.example)")
+    return url
+
 # The Qwen server reads at most 32768 tokens, 4096 of them kept for the reply. A Kannada
 # letter costs about 2 tokens, other characters about 1 in 3; longer scans are cut to fit.
 QWEN_PROMPT_TOKENS = 26000
@@ -582,7 +591,7 @@ def qwen_chat(system: str, user: str, schema: dict, num_ctx: int) -> dict:
         f"Reply with ONLY one JSON object, with exactly these string keys in this order: {keys}."
     )
     request = urllib.request.Request(
-        QWEN14B_URL,
+        server_url(QWEN14B_URL, "QWEN14B_URL"),
         data=json.dumps({"prompt": prompt, "max_tokens": 4096}).encode("utf-8"),
         headers={"Content-Type": "application/json"},
     )
@@ -655,7 +664,7 @@ def remote_gemma_chat(system: str, user: str, schema: dict, num_ctx: int) -> dic
     )
     payload = {"prompt": prompt, "max_tokens": 4096, "temperature": 0}
     request = urllib.request.Request(
-        GEMMA_E4B_URL,
+        server_url(GEMMA_E4B_URL, "GEMMA_E4B_URL"),
         data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
     )
